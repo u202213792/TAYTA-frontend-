@@ -1,0 +1,98 @@
+<header class="page-head">
+  <div>
+    <h1>Calendario</h1>
+    <p>Citas médicas, medicación, terapias y vacunas.</p>
+  </div>
+  @if (isStaff()) {
+    <button class="btn" (click)="toggleForm()">
+      <span class="material-symbols-rounded">{{ formOpen() ? 'close' : 'add' }}</span>
+      {{ formOpen() ? 'Cancelar' : 'Agregar evento' }}
+    </button>
+  } @else {
+    <span class="head-icon material-symbols-rounded">calendar_month</span>
+  }
+</header>
+
+<!-- Formulario (NURSE/ADMIN) -->
+@if (isStaff() && formOpen()) {
+  <form class="form-card" (ngSubmit)="submit()">
+    <h3>Nuevo evento</h3>
+    <div class="grid-form">
+      <label class="full">Adulto mayor
+        <select name="elderlyId" [(ngModel)]="form.elderlyId" required>
+          <option [ngValue]="null" disabled>Selecciona…</option>
+          @for (e of elderlyOptions(); track e.id) {
+            <option [ngValue]="e.id">{{ e.name || e.user?.username || ('DNI ' + e.dni) }}</option>
+          }
+        </select>
+      </label>
+      <label>Fecha de cita <input type="date" name="ad" [(ngModel)]="form.appointmentDate"></label>
+      <label>Hora de cita <input type="time" name="at" [(ngModel)]="form.appointmentTime"></label>
+      <label>Fecha de medicación <input type="date" name="md" [(ngModel)]="form.medicineDate"></label>
+      <label>Hora de medicación <input type="time" name="mt" [(ngModel)]="form.medicineTime"></label>
+      <label>Fecha de terapia <input type="date" name="td" [(ngModel)]="form.therapyDate"></label>
+      <label>Hora de terapia <input type="time" name="tt" [(ngModel)]="form.therapyTime"></label>
+      <label class="full">Vacuna <input type="text" name="vac" [(ngModel)]="form.vaccines" placeholder="Ej. Influenza"></label>
+    </div>
+    @if (formError()) { <p class="form-err">{{ formError() }}</p> }
+    <div class="form-actions">
+      <button type="button" class="btn btn--ghost" (click)="toggleForm()">Cancelar</button>
+      <button type="submit" class="btn" [disabled]="saving()">{{ saving() ? 'Guardando…' : 'Guardar evento' }}</button>
+    </div>
+  </form>
+}
+
+<!-- Filtros -->
+@if (!loading() && !error()) {
+  @if (filterOptions().length > 0) {
+    <div class="filter-bar">
+      <span class="material-symbols-rounded">filter_alt</span>
+      <label for="calElderly">Adulto mayor:</label>
+      <select id="calElderly" [ngModel]="elderlyFilter()" (ngModelChange)="elderlyFilter.set($event)">
+        <option [ngValue]="'all'">Todos</option>
+        @for (o of filterOptions(); track o.id) {
+          <option [ngValue]="o.id">{{ o.label }}</option>
+        }
+      </select>
+    </div>
+  }
+  <div class="filters">
+    @for (chip of filters; track chip.key) {
+      <button class="chip" [class.chip--active]="filter() === chip.key" (click)="filter.set(chip.key)">
+        {{ chip.label }}
+      </button>
+    }
+  </div>
+}
+
+<!-- Agenda -->
+@if (loading()) {
+  <div class="state">Cargando agenda…</div>
+} @else if (error()) {
+  <div class="state state--error">No se pudo cargar el calendario.</div>
+} @else if (visibleEvents().length === 0) {
+  <div class="state">No hay eventos para este filtro.</div>
+} @else {
+  <div class="agenda">
+    @for (ev of visibleEvents(); track $index) {
+      <div class="event" [attr.data-accent]="meta(ev.type).accent">
+        <div class="event-date">
+          <span class="day">{{ day(ev.date) }}</span>
+          <span class="mon">{{ month(ev.date) }}</span>
+        </div>
+        <span class="event-icon material-symbols-rounded">{{ meta(ev.type).icon }}</span>
+        <div class="event-body">
+          <strong>{{ meta(ev.type).label }}</strong>
+          <span class="event-meta">
+            <span class="material-symbols-rounded">person</span>{{ ev.elderly }}
+            @if (ev.time) { · <span class="material-symbols-rounded">schedule</span>{{ ev.time }} }
+            @if (ev.detail) { · {{ ev.detail }} }
+          </span>
+        </div>
+        @if (isUpcoming(ev.date)) {
+          <span class="event-tag">Próximo</span>
+        }
+      </div>
+    }
+  </div>
+}

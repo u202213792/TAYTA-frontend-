@@ -1,0 +1,144 @@
+<div class="landing">
+
+  <!-- ===== Navbar ===== -->
+  <header class="nav">
+    <a class="nav-brand" href="#inicio" (click)="scrollTo('inicio', $event)">
+      <img src="tayta-logo.svg" alt="TAYTA">
+      <span>TAYTA</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#nosotros" (click)="scrollTo('nosotros', $event)">Nosotros</a>
+      <a href="#servicios" (click)="scrollTo('servicios', $event)">Servicios</a>
+      <a href="#vitales" (click)="scrollTo('vitales', $event)">Funciones vitales</a>
+      <a href="#contacto" (click)="scrollTo('contacto', $event)">Contacto</a>
+    </nav>
+    <a class="btn btn--nav" routerLink="/login">Iniciar sesión</a>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero" id="inicio">
+    <video class="hero-bg" src="inicio.mp4" autoplay muted loop playsinline poster="login-photo.jpg"></video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-pill">Cuidado del adulto mayor</span>
+      <h1>El bienestar de quienes más quieres, <b>siempre cerca</b>.</h1>
+      <p>TAYTA conecta a familias, enfermeros y centros de salud para monitorear y acompañar a los adultos mayores desde un solo lugar.</p>
+      <div class="hero-cta">
+        <a class="btn btn--lg" routerLink="/register" [queryParams]="{ intent: 'subscribe' }">Suscríbete ahora</a>
+        <a class="btn btn--lg btn--ghost-light" routerLink="/login">Iniciar sesión</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Sobre nosotros ===== -->
+  <section class="section" id="nosotros">
+    <div class="section-head">
+      <h2>Sobre nosotros</h2>
+      <p>Una plataforma pensada para cuidar con cercanía, información y confianza.</p>
+    </div>
+    <div class="mv-grid">
+      <article class="mv-card">
+        <span class="mv-icon material-symbols-rounded">flag</span>
+        <h3>Nuestra misión</h3>
+        <p>Mejorar la calidad de vida de los adultos mayores brindando a sus familias herramientas simples para monitorear su salud y coordinar su cuidado con personal capacitado.</p>
+      </article>
+      <article class="mv-card">
+        <span class="mv-icon material-symbols-rounded">visibility</span>
+        <h3>Nuestra visión</h3>
+        <p>Ser la plataforma de referencia en el cuidado del adulto mayor, integrando familia, enfermería y centros de salud en una experiencia confiable y humana.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== Servicios ===== -->
+  <section class="section section--alt" id="servicios">
+    <div class="section-head">
+      <h2>Nuestros servicios</h2>
+      <p>Todo lo que necesitas para acompañar el cuidado, en un mismo lugar.</p>
+    </div>
+    <div class="serv-grid">
+      @for (s of services; track s.title) {
+        <article class="serv-card">
+          <span class="serv-icon material-symbols-rounded">{{ s.icon }}</span>
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.text }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <!-- ===== Control de funciones vitales ===== -->
+  <section class="section" id="vitales">
+    <div class="section-head">
+      <h2>¿Cómo funciona el control de funciones vitales?</h2>
+      <p>Un seguimiento claro de la salud del adulto mayor, paso a paso.</p>
+    </div>
+    <div class="steps">
+      @for (st of vitalSteps; track st.n) {
+        <article class="step">
+          <span class="step-num">{{ st.n }}</span>
+          <span class="step-icon material-symbols-rounded">{{ st.icon }}</span>
+          <h3>{{ st.title }}</h3>
+          <p>{{ st.text }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <!-- ===== Enfermería / atención personal ===== -->
+  <section class="section section--alt" id="enfermeria">
+    <div class="care">
+      <div class="care-media">
+        <img src="login-photo.jpg" alt="Enfermera técnica atendiendo a un adulto mayor">
+      </div>
+      <div class="care-text">
+        <h2>Enfermería técnica y atención personal</h2>
+        <p>Nuestro personal de enfermería realiza visitas y registra el estado del adulto mayor, garantizando una atención cercana y profesional.</p>
+        <ul>
+          <li><span class="material-symbols-rounded">check_circle</span> Controles periódicos de signos vitales.</li>
+          <li><span class="material-symbols-rounded">check_circle</span> Seguimiento de la medicación y terapias.</li>
+          <li><span class="material-symbols-rounded">check_circle</span> Observaciones registradas para la familia.</li>
+          <li><span class="material-symbols-rounded">check_circle</span> Trato humano y personalizado a cada paciente.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Contacto ===== -->
+  <section class="section contacto" id="contacto">
+    <div class="section-head">
+      <h2>Contáctanos</h2>
+      <p>¿Tienes dudas? Escríbenos o llámanos, estamos para ayudarte.</p>
+    </div>
+    <div class="contact-grid">
+      <a class="contact-card" href="mailto:tayta@gmail.com">
+        <span class="material-symbols-rounded">mail</span>
+        <strong>Correo</strong>
+        <span>tayta&#64;gmail.com</span>
+      </a>
+      <a class="contact-card" href="tel:+51967709871">
+        <span class="material-symbols-rounded">call</span>
+        <strong>Teléfono</strong>
+        <span>+51 967 709 871</span>
+      </a>
+      <div class="contact-card">
+        <span class="material-symbols-rounded">location_on</span>
+        <strong>Ubicación</strong>
+        <span>Lima, Perú</span>
+      </div>
+    </div>
+    <div class="contact-cta">
+      <a class="btn btn--lg" routerLink="/login">Ingresar a la plataforma</a>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="footer-brand">
+      <img src="tayta-logo.svg" alt="TAYTA">
+      <span>TAYTA</span>
+    </div>
+    <p>© {{ year }} TAYTA · Cuidado del adulto mayor</p>
+  </footer>
+
+</div>

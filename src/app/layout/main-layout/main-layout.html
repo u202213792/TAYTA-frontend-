@@ -1,0 +1,68 @@
+<div class="layout">
+
+  <!-- Overlay móvil -->
+  @if (sidebarOpen()) {
+    <div class="overlay" (click)="closeSidebar()"></div>
+  }
+
+  <!-- Barra lateral -->
+  <aside class="sidebar" [class.sidebar--open]="sidebarOpen()">
+    <div class="brand">
+      <img src="tayta-logo.svg" class="brand-logo" alt="TAYTA">
+      <div class="brand-text">
+        <span class="brand-name">TAYTA</span>
+        <span class="brand-tag">Cuidado del adulto mayor</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      @for (item of navItems(); track item.path) {
+        <a
+          class="nav-link"
+          [routerLink]="item.path"
+          routerLinkActive="nav-link--active"
+          (click)="closeSidebar()">
+          <span class="material-symbols-rounded">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="help-card">
+        <span class="material-symbols-rounded">support_agent</span>
+        <div>
+          <strong>¿Necesitas ayuda?</strong>
+          <p>Soporte 24/7 para tu familia</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Contenido -->
+  <div class="content">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" (click)="toggleSidebar()" aria-label="Menú">
+        <span class="material-symbols-rounded">menu</span>
+      </button>
+
+      <div class="spacer"></div>
+
+      <div class="user-chip">
+        <div class="avatar">{{ initials() }}</div>
+        <div class="user-meta">
+          <span class="user-name">{{ user()?.username }}</span>
+          <span class="badge" [class]="roleClass()">{{ user()?.role }}</span>
+        </div>
+      </div>
+
+      <button class="icon-btn" (click)="logout()" title="Cerrar sesión" aria-label="Cerrar sesión">
+        <span class="material-symbols-rounded">logout</span>
+      </button>
+    </header>
+
+    <main class="page">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

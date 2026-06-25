@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 300" role="img" aria-label="Cuidado del adulto mayor">
+  <!-- destellos -->
+  <circle cx="60" cy="50" r="50" fill="rgba(255,255,255,0.10)"/>
+  <circle cx="290" cy="250" r="64" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="300" cy="70" r="10" fill="rgba(255,255,255,0.25)"/>
+  <circle cx="40" cy="230" r="7" fill="rgba(255,255,255,0.25)"/>
+
+  <!-- base/sombra -->
+  <ellipse cx="170" cy="262" rx="120" ry="14" fill="rgba(0,0,0,0.10)"/>
+
+  <!-- ===== Adulto mayor ===== -->
+  <g transform="translate(118,86)">
+    <path d="M-40 150 Q-40 70 0 70 Q40 70 40 150 Z" fill="#f59e0b"/>
+    <rect x="-13" y="52" width="26" height="28" rx="11" fill="#f3c9a8"/>
+    <circle cx="0" cy="30" r="34" fill="#f3c9a8"/>
+    <path d="M-34 26 Q-34 -12 0 -12 Q34 -12 34 26 Q20 8 0 8 Q-20 8 -34 26 Z" fill="#e5e7eb"/>
+    <circle cx="-12" cy="30" r="8" fill="none" stroke="#475569" stroke-width="2.5"/>
+    <circle cx="12" cy="30" r="8" fill="none" stroke="#475569" stroke-width="2.5"/>
+    <line x1="-4" y1="30" x2="4" y2="30" stroke="#475569" stroke-width="2.5"/>
+    <path d="M-9 44 q9 8 18 0" stroke="#b45309" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- ===== Cuidadora ===== -->
+  <g transform="translate(222,74)">
+    <path d="M-44 162 Q-44 80 0 80 Q44 80 44 162 Z" fill="#0d9488"/>
+    <rect x="-13" y="60" width="26" height="30" rx="11" fill="#f7d9bd"/>
+    <circle cx="0" cy="34" r="37" fill="#f7d9bd"/>
+    <path d="M-37 30 Q-40 -10 0 -10 Q40 -10 37 30 Q37 8 26 6 L26 42 Q34 20 34 12 Q14 2 0 2 Q-14 2 -34 12 Q-34 22 -26 42 L-26 6 Q-37 8 -37 30 Z" fill="#7c3933"/>
+    <circle cx="-11" cy="31" r="2.6" fill="#3b2a20"/>
+    <circle cx="11" cy="31" r="2.6" fill="#3b2a20"/>
+    <path d="M-10 42 q10 8 20 0" stroke="#b45309" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- corazones -->
+  <path d="M170 70 q-9 -10 -18 -2 q-8 8 0 17 q7 7 18 15 q11 -8 18 -15 q8 -9 0 -17 q-9 -8 -18 2 Z" fill="#fb7185"/>
+  <path d="M280 150 q-5 -6 -10 -1 q-5 5 0 10 q4 4 10 8 q6 -4 10 -8 q5 -5 0 -10 q-5 -5 -10 1 Z" fill="rgba(255,255,255,0.55)"/>
+</svg>

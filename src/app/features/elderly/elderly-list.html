@@ -1,0 +1,41 @@
+<header class="page-head">
+  <div>
+    <h1>Adultos mayores</h1>
+    <p>Personas registradas y sus datos médicos básicos.</p>
+  </div>
+  @if (canCreate()) {
+    <button class="btn" (click)="create()">
+      <span class="material-symbols-rounded">add</span> Nuevo
+    </button>
+  } @else {
+    <span class="head-icon material-symbols-rounded">elderly</span>
+  }
+</header>
+
+@if (loading()) {
+  <div class="state">Cargando registros…</div>
+} @else if (error()) {
+  <div class="state state--error">No se pudieron cargar los registros.</div>
+} @else if (items().length === 0) {
+  <div class="state">Aún no hay adultos mayores registrados.</div>
+} @else {
+  <div class="profiles">
+    @for (e of items(); track e.id) {
+      <article class="profile-card" (click)="open(e.id)">
+        <div class="profile-top">
+          <span class="profile-avatar">{{ (e.name || e.user?.username || e.dni || '?').slice(0,2).toUpperCase() }}</span>
+          <span class="blood">{{ e.bloodType || '—' }}</span>
+        </div>
+        <h3 class="profile-name">{{ e.name || e.user?.username || ('DNI ' + e.dni) }}</h3>
+        <p class="profile-dni">DNI {{ e.dni }}</p>
+
+        <div class="profile-meta">
+          <span><span class="material-symbols-rounded">wc</span> {{ e.gender || '—' }}</span>
+          <span><span class="material-symbols-rounded">medical_information</span> {{ e.chronicDiseases || 'Sin enfermedades' }}</span>
+        </div>
+
+        <span class="profile-link">Ver perfil <span class="material-symbols-rounded">chevron_right</span></span>
+      </article>
+    }
+  </div>
+}

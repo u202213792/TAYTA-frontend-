@@ -1,0 +1,62 @@
+<div class="login-container">
+  <div class="login-split">
+
+    <!-- Panel visual -->
+    <aside class="login-visual">
+      <img class="login-photo" src="login-photo.jpg" alt="Cuidado del adulto mayor">
+      <div class="visual-overlay">
+        <img src="tayta-logo.svg" class="visual-logo" alt="">
+        <h2>Cuidamos a quienes más quieres</h2>
+        <p>Acompañamiento y monitoreo para el adulto mayor.</p>
+      </div>
+    </aside>
+
+    <!-- Panel del formulario -->
+    <div class="login-card">
+      <div class="login-brand">
+        <img src="tayta-logo.svg" class="login-brand-logo" alt="TAYTA">
+        <span class="login-brand-name">TAYTA</span>
+      </div>
+
+      <div class="login-header">
+        <h2>Iniciar Sesión</h2>
+        <p>Ingresa tus credenciales para acceder</p>
+      </div>
+
+      @if (intentSubscribe()) {
+        <p class="intent-banner"><span class="material-symbols-rounded">workspace_premium</span> Inicia sesión para elegir tu plan</p>
+      }
+
+      <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+        <div class="form-group">
+          <label for="username">Usuario</label>
+          <input type="text" id="username" name="username" [(ngModel)]="usuario.username"
+            placeholder="usuario" required autocomplete="username" #usernameInput="ngModel">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" name="password" [(ngModel)]="usuario.password"
+            placeholder="••••••••" required autocomplete="current-password" #passwordInput="ngModel">
+        </div>
+
+        @if (errorMessage()) { <p class="error-message">{{ errorMessage() }}</p> }
+        @if (slowHint()) {
+          <p class="info-message">⏳ El servidor está despertando, puede tardar ~1 minuto la primera vez…</p>
+        }
+
+        <div class="form-actions">
+          <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <button type="submit" class="btn-login" [disabled]="!loginForm.valid || loading()">
+          {{ loading() ? 'Ingresando...' : 'Ingresar' }}
+        </button>
+
+        <p class="switch-link">¿No tienes cuenta? <a routerLink="/register">Regístrate</a></p>
+
+        <p class="back-link"><a routerLink="/inicio">← Volver al inicio</a></p>
+      </form>
+    </div>
+  </div>
+</div>

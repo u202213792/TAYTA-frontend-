@@ -1,0 +1,140 @@
+.table-card { overflow-x: auto; }
+.head-icon { flex-shrink: 0; }
+
+/* Pills de estado */
+.pill {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.pill--ok { background: var(--success-bg); color: var(--success); }
+.pill--warn { background: var(--warning-bg); color: var(--warning); }
+.pill--danger { background: var(--danger-bg); color: var(--danger); }
+
+.obs { max-width: 220px; }
+
+/* Filtro por adulto mayor */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+  font-size: 0.88rem;
+}
+.filter-bar .material-symbols-rounded { font-size: 20px; color: var(--blue-600); }
+.filter-bar label { font-weight: 600; color: var(--muted); }
+.filter-bar select {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  min-width: 180px;
+}
+
+/* Gráficos */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.2rem 1.3rem;
+  animation: fadeInUp 0.45s ease both;
+}
+.chart-card--wide { grid-column: 1 / -1; }
+.chart-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.98rem;
+  margin-bottom: 0.9rem;
+}
+.chart-card h3 .material-symbols-rounded { font-size: 20px; color: var(--blue-600); }
+.chart-svg { width: 100%; height: 120px; display: block; }
+.chart-foot { margin: 0.7rem 0 0; font-size: 0.76rem; }
+
+/* Presión: leyenda */
+.bp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  align-items: center;
+}
+.bp-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.3rem; }
+.dot-sys { background: var(--danger); }
+.dot-dia { background: var(--blue-600); }
+.bp-last { margin-left: auto; font-weight: 700; color: var(--ink); }
+
+/* Estado: barras */
+.status-bars { display: flex; flex-direction: column; gap: 0.85rem; }
+.sbar-head { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem; }
+.sbar-head b { color: var(--ink); }
+.sbar-track { height: 10px; border-radius: 999px; background: #eef2f7; overflow: hidden; }
+.sbar-fill { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
+.sbar-fill--ok { background: var(--success); }
+.sbar-fill--warn { background: var(--warning); }
+.sbar-fill--danger { background: var(--danger); }
+
+/* Adherencia: dona */
+.donut-wrap { display: flex; align-items: center; gap: 1.2rem; }
+.donut { width: 120px; height: 120px; flex-shrink: 0; }
+.donut circle { transition: stroke-dasharray 0.6s ease; }
+.donut-pct { font-size: 22px; font-weight: 800; fill: var(--ink); }
+.donut-sub { font-size: 10px; fill: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.donut-legend { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; }
+.donut-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.4rem; }
+.dot-ok { background: var(--success); }
+.dot-pend { background: #e7e5e0; }
+
+/* Monitoreos por mes: barras verticales */
+.month-bars { display: flex; align-items: flex-end; gap: 1rem; height: 150px; padding-top: 0.5rem; }
+.mbar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.3rem; height: 100%; }
+.mbar-col { flex: 1; width: 100%; max-width: 48px; display: flex; align-items: flex-end; }
+.mbar-fill {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, var(--blue-500), var(--blue-700));
+  min-height: 4px;
+  transition: height 0.6s ease;
+}
+.mbar-count { font-size: 0.8rem; font-weight: 700; }
+.mbar-label { font-size: 0.72rem; color: var(--muted); }
+
+@media (max-width: 800px) {
+  .charts { grid-template-columns: 1fr; }
+  .chart-card--wide { grid-column: auto; }
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: flex-end;
+}
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 9px;
+  background: var(--blue-50);
+  color: var(--blue-700);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.icon-btn:hover { background: var(--blue-100); }
+.icon-btn--danger { background: var(--danger-bg); color: var(--danger); }
+.icon-btn--danger:hover { background: #fee2e2; }

@@ -1,0 +1,171 @@
+<header class="page-head">
+  <div>
+    <h1>{{ isAdmin() ? 'Suscripciones' : 'Mi suscripción' }}</h1>
+    <p>{{ isAdmin() ? 'Planes y pagos de todos los apoderados.' : 'Tu plan, estado y pagos realizados.' }}</p>
+  </div>
+  <span class="head-icon material-symbols-rounded">workspace_premium</span>
+</header>
+
+@if (subscribedOk()) {
+  <div class="sub-ok">
+    <span class="material-symbols-rounded">check_circle</span>
+    ¡Plan activado! Tu suscripción ya está lista. Redirigiendo…
+  </div>
+}
+
+@if (loading()) {
+  <div class="state">Cargando suscripción…</div>
+} @else if (error()) {
+  <div class="state state--error">No se pudo cargar la información.</div>
+} @else if (subscriptions().length === 0) {
+  <div class="state">No tienes una suscripción registrada todavía.</div>
+} @else {
+
+  <!-- Filtro por apoderado (solo admin) -->
+  @if (isAdmin() && guardianOptions().length > 0) {
+    <div class="filter-bar">
+      <span class="material-symbols-rounded">filter_alt</span>
+      <label for="guardianFilter">Apoderado:</label>
+      <select id="guardianFilter" [ngModel]="guardianFilter()" (ngModelChange)="guardianFilter.set($event)">
+        <option [ngValue]="'all'">Todos</option>
+        @for (o of guardianOptions(); track o.id) {
+          <option [ngValue]="o.id">{{ o.label }}</option>
+        }
+      </select>
+    </div>
+  }
+
+  <!-- Tarjetas de planes -->
+  <div class="plans">
+    @for (s of visibleSubs(); track s.id) {
+      <article class="plan-card" [class]="planClass(s.planType)">
+        <div class="plan-top">
+          <span class="plan-type">
+            <span class="material-symbols-rounded">workspace_premium</span>{{ s.planType }}
+          </span>
+          @if (isActive(s.status)) {
+            <span class="st st--on">Activa</span>
+          } @else {
+            <span class="st st--off">{{ s.status }}</span>
+          }
+        </div>
+
+        <div class="plan-price">
+          <span class="cur">S/</span>{{ netPrice(s) | number: '1.2-2' }}
+          @if (s.discount > 0) {
+            <span class="plan-disc">−S/ {{ s.discount | number: '1.2-2' }}</span>
+          }
+        </div>
+
+        <div class="plan-rows">
+          @if (isAdmin() && s.guardian) {
+            <div class="plan-row">
+              <span class="material-symbols-rounded">person</span>
+              {{ s.guardian.user?.username || ('DNI ' + s.guardian.dni) }}
+            </div>
+          }
+          <div class="plan-row">
+            <span class="material-symbols-rounded">event</span>
+            {{ s.startDate }} → {{ s.expiryDate }}
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+
+  <!-- Resumen + Historial de pagos -->
+  <div class="pay-head">
+    <h2 class="section-title">Historial de pagos</h2>
+    <span class="paid-total">Total pagado: <strong>S/ {{ totalPaid() | number: '1.2-2' }}</strong></span>
+  </div>
+
+  @if (visiblePayments().length === 0) {
+    <div class="state">Sin pagos registrados.</div>
+  } @else {
+    <div class="table-card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Plan</th>
+            <th>Monto</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of visiblePayments(); track p.id) {
+            <tr>
+              <td>{{ p.paymentDate }}</td>
+              <td>{{ p.subscription?.planType || '—' }}</td>
+              <td><strong>S/ {{ p.amount | number: '1.2-2' }}</strong></td>
+              <td><span class="pill pill--paid">{{ p.status }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}
+
+<!-- Comparativa de planes (solo apoderados; el admin solo gestiona) -->
+@if (isGuardian()) {
+<h2 class="section-title">Planes disponibles</h2>
+<div class="compare">
+  @for (p of plans; track p.type) {
+    <article class="compare-card" [class.compare-card--current]="currentPlan() === p.type">
+      <div class="compare-head">
+        <span class="compare-type">{{ p.type }}</span>
+        @if (currentPlan() === p.type) { <span class="compare-tag">Tu plan</span> }
+      </div>
+      <div class="compare-price"><span class="cur">S/</span>{{ p.price }}<span class="per">/mes</span></div>
+      <div class="compare-limit"><span class="material-symbols-rounded">groups</span>{{ p.limit }}</div>
+      <ul class="compare-features">
+        @for (f of p.features; track f) {
+          <li><span class="material-symbols-rounded">check_circle</span>{{ f }}</li>
+        }
+      </ul>
+
+      @if (isGuardian()) {
+        @if (currentPlan() === p.type) {
+          <button class="btn btn--ghost compare-btn" disabled>Plan actual</button>
+        } @else {
+          <button class="btn compare-btn" (click)="openSubscribe(p.type)">
+            {{ hasActive() ? 'Cambiar a este plan' : 'Contratar' }}
+          </button>
+        }
+      }
+    </article>
+  }
+</div>
+
+<!-- Modal de contratación -->
+@if (subModalPlan(); as plan) {
+  <div class="modal-overlay" (click)="closeSubscribe()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>{{ hasActive() ? 'Cambiar al plan' : 'Contratar plan' }} {{ plan }}</h3>
+      <p class="muted" style="margin:-0.5rem 0 1rem; font-size:0.88rem;">Elige tu método de pago para activar la suscripción.</p>
+      <div class="pay-methods">
+        @for (m of paymentMethods; track m) {
+          <button
+            type="button"
+            class="pay-method"
+            [class.pay-method--active]="method() === m"
+            (click)="method.set(m)">
+            <span class="material-symbols-rounded">
+              {{ m === 'Tarjeta' ? 'credit_card' : (m === 'Efectivo' ? 'payments' : 'qr_code_2') }}
+            </span>
+            {{ m }}
+          </button>
+        }
+      </div>
+      @if (subError()) { <p class="form-err">{{ subError() }}</p> }
+      <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="closeSubscribe()">Cancelar</button>
+        <button class="btn" (click)="confirmSubscribe()" [disabled]="subscribing()">
+          {{ subscribing() ? 'Procesando…' : 'Confirmar y pagar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+}

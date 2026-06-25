@@ -1,0 +1,226 @@
+.head-icon { flex-shrink: 0; }
+.table-card { overflow-x: auto; }
+
+/* Tarjetas de plan */
+.plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.plan-card {
+  position: relative;
+  padding: 1.3rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  border-top: 4px solid var(--blue-500);
+  overflow: hidden;
+}
+.plan-card.plan--premium { border-top-color: #d97706; }
+.plan-card.plan--standard { border-top-color: var(--blue-600); }
+.plan-card.plan--basic { border-top-color: #64748b; }
+
+.plan-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+.plan-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+}
+.plan-type .material-symbols-rounded { font-size: 22px; color: #d97706; }
+.plan--standard .plan-type .material-symbols-rounded { color: var(--blue-600); }
+.plan--basic .plan-type .material-symbols-rounded { color: #64748b; }
+
+.st {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.st--on { background: var(--success-bg); color: var(--success); }
+.st--off { background: #f1f5f9; color: var(--muted); }
+
+.plan-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 0.8rem;
+}
+.plan-price .cur { font-size: 1rem; color: var(--muted); margin-right: 0.2rem; vertical-align: super; }
+.plan-disc {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--success);
+  vertical-align: middle;
+}
+
+.plan-rows { display: flex; flex-direction: column; gap: 0.45rem; }
+.plan-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.plan-row .material-symbols-rounded { font-size: 18px; color: var(--blue-500); }
+
+/* Historial */
+.pay-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.8rem 0 0.9rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.section-title { margin: 0; font-size: 1.1rem; }
+.paid-total { font-size: 0.9rem; color: var(--muted); }
+.paid-total strong { color: var(--blue-700); }
+
+.pill {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+.pill--paid { background: var(--success-bg); color: var(--success); }
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+  font-size: 0.88rem;
+}
+.filter-bar .material-symbols-rounded { font-size: 20px; color: var(--blue-600); }
+.filter-bar label { font-weight: 600; color: var(--muted); }
+.filter-bar select {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  min-width: 180px;
+}
+
+.sub-ok {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+  color: var(--success);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid #bbf7d0;
+  animation: fadeInUp 0.3s ease both;
+}
+
+/* Comparativa de planes */
+.compare {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.compare-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.4rem;
+  transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+}
+.compare-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.compare-card--current {
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 2px var(--blue-200), var(--shadow);
+}
+.compare-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+.compare-type { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.03em; color: var(--blue-800); }
+.compare-tag {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--blue-600);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.compare-price {
+  font-size: 1.9rem;
+  font-weight: 800;
+  margin-bottom: 0.8rem;
+}
+.compare-price .cur { font-size: 0.95rem; color: var(--muted); vertical-align: super; margin-right: 0.15rem; }
+.compare-price .per { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+.compare-limit {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: var(--blue-50);
+  color: var(--blue-800);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.compare-limit .material-symbols-rounded { font-size: 18px; }
+.compare-features { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.compare-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+.compare-features .material-symbols-rounded { font-size: 18px; color: var(--success); flex-shrink: 0; }
+
+.compare-btn { width: 100%; margin-top: 1.1rem; }
+
+/* Métodos de pago (modal) */
+.pay-methods { display: flex; flex-direction: column; gap: 0.5rem; }
+.pay-method {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.pay-method .material-symbols-rounded { color: var(--blue-600); }
+.pay-method:hover { border-color: var(--blue-300); background: var(--blue-50); }
+.pay-method--active {
+  border-color: var(--blue-600);
+  background: var(--blue-50);
+  box-shadow: 0 0 0 2px var(--blue-200);
+}
+
+@media (max-width: 800px) {
+  .compare { grid-template-columns: 1fr; }
+}
