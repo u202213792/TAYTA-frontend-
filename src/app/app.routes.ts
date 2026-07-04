@@ -56,6 +56,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/users/users-list'),
       },
       {
+        path: 'nurses',
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN'] },
+        loadComponent: () => import('./features/nurses/nurses'),
+      },
+      {
         path: 'monitoring',
         canActivate: [planGuard],
         loadComponent: () => import('./features/monitoring/monitoring'),

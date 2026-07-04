@@ -38,7 +38,7 @@
       <label>Fecha <input type="date" name="date" [(ngModel)]="form.monitoringDate" required></label>
       <label>Hora <input type="time" name="time" [(ngModel)]="form.monitoringTime" required></label>
       <label>Temperatura (°C) <input type="number" step="0.1" min="30" max="45" name="temp" [(ngModel)]="form.temperature" required></label>
-      <label>Presión arterial <input type="text" name="bp" [(ngModel)]="form.bloodPressure" placeholder="120/80"></label>
+      <label>Presión arterial <input type="text" name="bp" [(ngModel)]="form.bloodPressure" placeholder="120/80" pattern="\d{2,3}/\d{2,3}" title="Formato: sistólica/diastólica, ej. 120/80"></label>
 
       <label>
         Estado medicación
@@ -68,19 +68,11 @@
 @if (!loading() && !error() && items().length > 0) {
   <section class="charts">
 
-    <!-- Temperatura con banda de rango normal -->
+    <!-- Temperatura (línea + banda normal) -->
     <div class="chart-card">
       <h3><span class="material-symbols-rounded">thermostat</span> Temperatura (°C)</h3>
-      @if (tempChart(); as c) {
-        <svg class="chart-svg" [attr.viewBox]="'0 0 ' + c.W + ' ' + c.H" preserveAspectRatio="none">
-          <rect [attr.x]="c.pad" [attr.y]="c.bandTop" [attr.width]="c.W - 2*c.pad" [attr.height]="c.bandHeight"
-                fill="rgba(22,163,74,0.12)"></rect>
-          <polyline [attr.points]="c.line" fill="none" stroke="var(--blue-600)" stroke-width="2.5"
-                    stroke-linejoin="round" stroke-linecap="round"></polyline>
-          @for (p of c.pts; track $index) {
-            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="3.5" fill="#fff" stroke="var(--blue-600)" stroke-width="2"></circle>
-          }
-        </svg>
+      @if (tempCfg(); as cfg) {
+        <div class="chart-canvas"><app-chart [config]="cfg"></app-chart></div>
         <p class="muted chart-foot">Banda verde = rango normal (36–37.5 °C)</p>
       } @else {
         <p class="muted">Se necesitan al menos 2 controles.</p>
@@ -90,74 +82,32 @@
     <!-- Presión arterial -->
     <div class="chart-card">
       <h3><span class="material-symbols-rounded">cardiology</span> Presión arterial</h3>
-      @if (bpChart(); as c) {
-        <svg class="chart-svg" [attr.viewBox]="'0 0 ' + c.W + ' ' + c.H" preserveAspectRatio="none">
-          <polyline [attr.points]="c.sys" fill="none" stroke="var(--danger)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
-          <polyline [attr.points]="c.dia" fill="none" stroke="var(--blue-600)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
-        </svg>
-        <div class="bp-legend">
-          <span><i class="dot-sys"></i> Sistólica</span>
-          <span><i class="dot-dia"></i> Diastólica</span>
-          <span class="bp-last">Último: {{ c.last.sys }}/{{ c.last.dia }}</span>
-        </div>
+      @if (bpCfg(); as cfg) {
+        <div class="chart-canvas"><app-chart [config]="cfg"></app-chart></div>
       } @else {
         <p class="muted">Se necesitan al menos 2 controles con presión.</p>
       }
     </div>
 
-    <!-- Estado de signos vitales -->
+    <!-- Estado de signos vitales (dona) -->
     <div class="chart-card">
       <h3><span class="material-symbols-rounded">ecg_heart</span> Estado de signos vitales</h3>
-      <div class="status-bars">
-        <div class="sbar">
-          <div class="sbar-head"><span>Normal</span><b>{{ statusCounts().normal }}</b></div>
-          <div class="sbar-track"><div class="sbar-fill sbar-fill--ok" [style.width.%]="statusCounts().pNormal"></div></div>
-        </div>
-        <div class="sbar">
-          <div class="sbar-head"><span>Alerta</span><b>{{ statusCounts().alerta }}</b></div>
-          <div class="sbar-track"><div class="sbar-fill sbar-fill--warn" [style.width.%]="statusCounts().pAlerta"></div></div>
-        </div>
-        <div class="sbar">
-          <div class="sbar-head"><span>Crítico</span><b>{{ statusCounts().critico }}</b></div>
-          <div class="sbar-track"><div class="sbar-fill sbar-fill--danger" [style.width.%]="statusCounts().pCritico"></div></div>
-        </div>
-      </div>
+      <div class="chart-canvas"><app-chart [config]="statusCfg()"></app-chart></div>
       <p class="muted chart-foot">Total de monitoreos: {{ statusCounts().total }}</p>
     </div>
 
     <!-- Adherencia a la medicación (dona) -->
     <div class="chart-card">
       <h3><span class="material-symbols-rounded">medication</span> Adherencia a la medicación</h3>
-      <div class="donut-wrap">
-        <svg viewBox="0 0 120 120" class="donut">
-          <circle cx="60" cy="60" r="42" fill="none" stroke="#e7e5e0" stroke-width="14"></circle>
-          <circle cx="60" cy="60" r="42" fill="none" stroke="var(--success)" stroke-width="14"
-                  stroke-linecap="round"
-                  [attr.stroke-dasharray]="medAdherence().dash + ' ' + medAdherence().circ"
-                  transform="rotate(-90 60 60)"></circle>
-          <text x="60" y="58" text-anchor="middle" class="donut-pct">{{ medAdherence().pct }}%</text>
-          <text x="60" y="74" text-anchor="middle" class="donut-sub">al día</text>
-        </svg>
-        <div class="donut-legend">
-          <span><i class="dot-ok"></i> Al día: {{ medAdherence().alDia }}</span>
-          <span><i class="dot-pend"></i> Pendiente: {{ medAdherence().pend }}</span>
-        </div>
-      </div>
+      <div class="chart-canvas"><app-chart [config]="medCfg()"></app-chart></div>
+      <p class="muted chart-foot">{{ medAdherence().pct }}% al día · {{ medAdherence().alDia }}/{{ medAdherence().total }}</p>
     </div>
 
-    <!-- Monitoreos por mes -->
+    <!-- Monitoreos por mes (barras) -->
     <div class="chart-card chart-card--wide">
       <h3><span class="material-symbols-rounded">bar_chart</span> Monitoreos por mes</h3>
-      @if (monthlyCounts().length) {
-        <div class="month-bars">
-          @for (m of monthlyCounts(); track m.label) {
-            <div class="mbar">
-              <div class="mbar-col"><div class="mbar-fill" [style.height.%]="m.pct"></div></div>
-              <span class="mbar-count">{{ m.count }}</span>
-              <span class="mbar-label">{{ m.label }}</span>
-            </div>
-          }
-        </div>
+      @if (hasMonthly()) {
+        <div class="chart-canvas"><app-chart [config]="monthlyCfg()"></app-chart></div>
       } @else {
         <p class="muted">Sin datos por mes.</p>
       }

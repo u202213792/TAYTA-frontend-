@@ -70,6 +70,12 @@ export interface Nurse {
   licenseNumber: string;
 }
 
+export interface NurseElderly {
+  id: number;
+  nurse: Nurse | null;
+  elderly: Elderly | null;
+}
+
 export interface Monitoring {
   id: number;
   elderly: Elderly | null;

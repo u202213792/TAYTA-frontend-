@@ -17,7 +17,7 @@
 
   <!-- ===== Hero ===== -->
   <section class="hero" id="inicio">
-    <video class="hero-bg" src="inicio.mp4" autoplay muted loop playsinline poster="login-photo.jpg"></video>
+    <video class="hero-bg" src="iniciov2.mp4" autoplay muted loop playsinline preload="auto"></video>
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <span class="hero-pill">Cuidado del adulto mayor</span>
@@ -30,19 +30,40 @@
     </div>
   </section>
 
+  <!-- ===== Franja de confianza ===== -->
+  <section class="stats-band">
+    <div class="stat reveal reveal--left">
+      <span class="stat-num"><span class="count" data-to="500">0</span>+</span>
+      <span class="stat-cap">Familias acompañadas</span>
+    </div>
+    <div class="stat reveal">
+      <span class="stat-num"><span class="count" data-to="120">0</span>+</span>
+      <span class="stat-cap">Enfermeros certificados</span>
+    </div>
+    <div class="stat reveal">
+      <span class="stat-num"><span class="count" data-to="8500">0</span>+</span>
+      <span class="stat-cap">Monitoreos realizados</span>
+    </div>
+    <div class="stat reveal reveal--right">
+      <span class="stat-num">4.9<span class="star">★</span></span>
+      <span class="stat-cap">Satisfacción</span>
+    </div>
+  </section>
+
   <!-- ===== Sobre nosotros ===== -->
   <section class="section" id="nosotros">
-    <div class="section-head">
+    <div class="section-head reveal">
+      <span class="kicker">Quiénes somos</span>
       <h2>Sobre nosotros</h2>
       <p>Una plataforma pensada para cuidar con cercanía, información y confianza.</p>
     </div>
     <div class="mv-grid">
-      <article class="mv-card">
+      <article class="mv-card reveal reveal--left">
         <span class="mv-icon material-symbols-rounded">flag</span>
         <h3>Nuestra misión</h3>
         <p>Mejorar la calidad de vida de los adultos mayores brindando a sus familias herramientas simples para monitorear su salud y coordinar su cuidado con personal capacitado.</p>
       </article>
-      <article class="mv-card">
+      <article class="mv-card mv-card--accent reveal reveal--right">
         <span class="mv-icon material-symbols-rounded">visibility</span>
         <h3>Nuestra visión</h3>
         <p>Ser la plataforma de referencia en el cuidado del adulto mayor, integrando familia, enfermería y centros de salud en una experiencia confiable y humana.</p>
@@ -52,13 +73,14 @@
 
   <!-- ===== Servicios ===== -->
   <section class="section section--alt" id="servicios">
-    <div class="section-head">
+    <div class="section-head reveal">
+      <span class="kicker">Lo que ofrecemos</span>
       <h2>Nuestros servicios</h2>
       <p>Todo lo que necesitas para acompañar el cuidado, en un mismo lugar.</p>
     </div>
     <div class="serv-grid">
       @for (s of services; track s.title) {
-        <article class="serv-card">
+        <article class="serv-card reveal" [class.reveal--left]="$even" [class.reveal--right]="$odd">
           <span class="serv-icon material-symbols-rounded">{{ s.icon }}</span>
           <h3>{{ s.title }}</h3>
           <p>{{ s.text }}</p>
@@ -69,13 +91,14 @@
 
   <!-- ===== Control de funciones vitales ===== -->
   <section class="section" id="vitales">
-    <div class="section-head">
+    <div class="section-head reveal">
+      <span class="kicker">Cómo funciona</span>
       <h2>¿Cómo funciona el control de funciones vitales?</h2>
       <p>Un seguimiento claro de la salud del adulto mayor, paso a paso.</p>
     </div>
     <div class="steps">
       @for (st of vitalSteps; track st.n) {
-        <article class="step">
+        <article class="step reveal">
           <span class="step-num">{{ st.n }}</span>
           <span class="step-icon material-symbols-rounded">{{ st.icon }}</span>
           <h3>{{ st.title }}</h3>
@@ -88,10 +111,10 @@
   <!-- ===== Enfermería / atención personal ===== -->
   <section class="section section--alt" id="enfermeria">
     <div class="care">
-      <div class="care-media">
+      <div class="care-media reveal reveal--left">
         <img src="login-photo.jpg" alt="Enfermera técnica atendiendo a un adulto mayor">
       </div>
-      <div class="care-text">
+      <div class="care-text reveal reveal--right">
         <h2>Enfermería técnica y atención personal</h2>
         <p>Nuestro personal de enfermería realiza visitas y registra el estado del adulto mayor, garantizando una atención cercana y profesional.</p>
         <ul>
@@ -106,22 +129,23 @@
 
   <!-- ===== Contacto ===== -->
   <section class="section contacto" id="contacto">
-    <div class="section-head">
+    <div class="section-head reveal">
+      <span class="kicker">Ponte en contacto</span>
       <h2>Contáctanos</h2>
       <p>¿Tienes dudas? Escríbenos o llámanos, estamos para ayudarte.</p>
     </div>
     <div class="contact-grid">
-      <a class="contact-card" href="mailto:tayta@gmail.com">
+      <a class="contact-card reveal" href="mailto:tayta@gmail.com">
         <span class="material-symbols-rounded">mail</span>
         <strong>Correo</strong>
         <span>tayta&#64;gmail.com</span>
       </a>
-      <a class="contact-card" href="tel:+51967709871">
+      <a class="contact-card contact-card--accent reveal" href="tel:+51967709871">
         <span class="material-symbols-rounded">call</span>
         <strong>Teléfono</strong>
         <span>+51 967 709 871</span>
       </a>
-      <div class="contact-card">
+      <div class="contact-card reveal">
         <span class="material-symbols-rounded">location_on</span>
         <strong>Ubicación</strong>
         <span>Lima, Perú</span>
@@ -129,6 +153,18 @@
     </div>
     <div class="contact-cta">
       <a class="btn btn--lg" routerLink="/login">Ingresar a la plataforma</a>
+    </div>
+  </section>
+
+  <!-- ===== CTA final ===== -->
+  <section class="cta-band">
+    <div class="cta-inner reveal">
+      <h2>¿Listo para cuidar mejor a quienes más quieres?</h2>
+      <p>Únete a TAYTA y ten el bienestar de tu adulto mayor siempre a la mano.</p>
+      <div class="cta-actions">
+        <a class="btn btn--lg" routerLink="/register" [queryParams]="{ intent: 'subscribe' }">Suscríbete ahora</a>
+        <a class="btn btn--lg btn--ghost-light" routerLink="/login">Iniciar sesión</a>
+      </div>
     </div>
   </section>
 

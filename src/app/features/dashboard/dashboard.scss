@@ -6,7 +6,7 @@
   gap: 1rem;
   padding: 1.6rem 1.9rem;
   border-radius: var(--radius);
-  background: linear-gradient(120deg, #0f766e, #14b8a6);
+  background: linear-gradient(120deg, var(--blue-700), var(--blue-500));
   color: #fff;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
@@ -206,6 +206,7 @@
 }
 .act-ico--violet { background: #ede9fe; color: #6d28d9; }
 .act-ico--blue { background: var(--blue-100); color: var(--blue-700); }
+.act-ico--amber { background: #fef3c7; color: #b45309; }
 .act-text { display: flex; flex-direction: column; }
 .act-text strong { font-size: 0.88rem; }
 .act-text span { font-size: 0.76rem; color: var(--muted); }
@@ -243,9 +244,10 @@
   content: ''; position: absolute; top: -40%; right: -5%;
   width: 240px; height: 240px; border-radius: 50%; background: rgba(255, 255, 255, 0.12);
 }
-.hero--admin { background: linear-gradient(120deg, #115e59, #0d9488); }
-.hero--nurse { background: linear-gradient(120deg, #6d28d9, #4f46e5); }
-.hero--guardian { background: linear-gradient(120deg, #0f766e, #0ea5a4); }
+/* Cada banner sigue la paleta de su rol (admin más profundo/serio) */
+.hero--admin { background: linear-gradient(120deg, var(--blue-800), var(--blue-600)); }
+.hero--nurse { background: linear-gradient(120deg, var(--blue-700), var(--blue-500)); }
+.hero--guardian { background: linear-gradient(120deg, var(--blue-700), var(--blue-500)); }
 .hero-kicker { margin: 0; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--blue-100); font-weight: 600; }
 .hero-title { margin: 0.3rem 0; font-size: 1.7rem; color: #fff; }
 .hero-sub { margin: 0; color: rgba(255, 255, 255, 0.85); font-size: 0.95rem; }
@@ -274,6 +276,7 @@
 .stat-icon[data-accent='teal'] { background: #ccfbf1; color: #0f766e; }
 .stat-icon[data-accent='green'] { background: #dcfce7; color: #166534; }
 .stat-icon[data-accent='violet'] { background: #ede9fe; color: #6d28d9; }
+.stat-icon[data-accent='amber'] { background: #fef3c7; color: #b45309; }
 .stat-body { display: flex; flex-direction: column; }
 .stat-value { font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
 .stat-label { font-size: 0.82rem; color: var(--muted); }
@@ -299,10 +302,68 @@
 .action-arrow { margin-left: auto; color: var(--blue-300); transition: transform 0.18s ease, color 0.18s ease; }
 .action-card:hover .action-arrow { transform: translateX(4px); color: var(--blue-600); }
 
+/* ============ Enfermero / Admin: split de 2 columnas ============ */
+.nsplit {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1rem;
+  margin-top: 1.2rem;
+  align-items: start;
+}
+.sec-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.sec-head .section-title { margin-bottom: 0; }
+.btn--sm .material-symbols-rounded { font-size: 18px; vertical-align: -3px; }
+
+/* Tarjetas "Mis adultos mayores" (enfermero) */
+.pt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.8rem;
+}
+.pt-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+.pt-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--blue-200); }
+.pt-top { display: flex; align-items: center; justify-content: space-between; }
+.pt-avatar {
+  display: grid; place-items: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-600), var(--blue-500));
+  color: #fff; font-weight: 700; font-size: 0.85rem;
+}
+.pt-name { font-size: 0.95rem; }
+.pt-vitals { display: flex; gap: 0.9rem; font-size: 0.85rem; color: var(--ink); }
+.pt-vitals span { display: inline-flex; align-items: center; gap: 0.2rem; }
+.pt-vitals .material-symbols-rounded { font-size: 17px; color: var(--blue-600); }
+.pt-date { font-size: 0.74rem; color: var(--muted); }
+
+/* Distribución de usuarios por rol (admin) */
+.role-dist {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem 1.1rem;
+}
+.role-row { display: flex; align-items: center; justify-content: space-between; }
+.role-row b { font-size: 1.05rem; }
+
 /* ============ Responsive ============ */
 @media (max-width: 1000px) {
   .gcards { grid-template-columns: repeat(2, 1fr); }
   .gsplit { grid-template-columns: 1fr; }
+  .nsplit { grid-template-columns: 1fr; }
 }
 @media (max-width: 900px) {
   .stats { grid-template-columns: repeat(2, 1fr); }

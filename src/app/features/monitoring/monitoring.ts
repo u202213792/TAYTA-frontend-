@@ -1,13 +1,27 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ChartConfiguration, Plugin } from 'chart.js';
 import { TaytaApi } from '../../core/services/tayta-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Elderly, Monitoring } from '../../core/models/domain.models';
 import { extractError } from '../../core/utils/http-error';
+import { ChartComponent } from '../../shared/chart/chart';
+
+// Paleta (teal + estados) para los gráficos
+const C = {
+  teal: '#0d9488',
+  tealSoft: 'rgba(13,148,136,0.14)',
+  ok: '#0d9488',
+  warn: '#d97706',
+  danger: '#dc2626',
+  grid: 'rgba(15,23,42,0.06)',
+  track: '#e7e5e0',
+  ink: '#475569',
+};
 
 @Component({
   selector: 'app-monitoring',
-  imports: [FormsModule],
+  imports: [FormsModule, ChartComponent],
   templateUrl: './monitoring.html',
   styleUrl: './monitoring.scss',
 })
@@ -39,7 +53,9 @@ export default class MonitoringPage {
     return f === 'all' ? this.items() : this.items().filter((m) => m.elderly?.id === f);
   });
 
-  // ── Gráficos ──
+  // ── Gráficos (Chart.js) ──
+  // Datos numéricos (para textos) + configuraciones de gráfico.
+
   readonly statusCounts = computed(() => {
     let normal = 0, alerta = 0, critico = 0;
     for (const m of this.filtered()) {
@@ -48,65 +64,9 @@ export default class MonitoringPage {
       else if (s.startsWith('ALERTA')) alerta++;
       else if (s) critico++;
     }
-    const total = normal + alerta + critico || 1;
-    return {
-      normal, alerta, critico, total,
-      pNormal: Math.round((normal / total) * 100),
-      pAlerta: Math.round((alerta / total) * 100),
-      pCritico: Math.round((critico / total) * 100),
-    };
+    return { normal, alerta, critico, total: normal + alerta + critico };
   });
 
-  private recent(filterFn: (m: Monitoring) => boolean) {
-    return [...this.filtered()]
-      .filter((m) => m.monitoringDate && filterFn(m))
-      .sort((a, b) => (a.monitoringDate < b.monitoringDate ? -1 : 1))
-      .slice(-8);
-  }
-
-  // Temperatura: escala fija 35–40 °C con banda de rango normal (36–37.5)
-  readonly tempChart = computed(() => {
-    const data = this.recent((m) => m.temperature != null);
-    if (data.length < 2) return null;
-
-    const W = 320, H = 110, pad = 14, MIN = 35, MAX = 40;
-    const y = (t: number) => +(H - pad - ((t - MIN) / (MAX - MIN)) * (H - 2 * pad)).toFixed(1);
-    const x = (i: number) => +(pad + (i * (W - 2 * pad)) / (data.length - 1)).toFixed(1);
-
-    const pts = data.map((m, i) => ({ x: x(i), y: y(Number(m.temperature)), temp: m.temperature }));
-    const bandTop = y(37.5);
-    const bandBottom = y(36);
-    return {
-      pts,
-      line: pts.map((p) => `${p.x},${p.y}`).join(' '),
-      W, H, pad,
-      bandTop, bandHeight: +(bandBottom - bandTop).toFixed(1),
-    };
-  });
-
-  // Presión arterial: líneas sistólica/diastólica (escala 40–200)
-  readonly bpChart = computed(() => {
-    const data = this.recent((m) => !!m.bloodPressure && m.bloodPressure.includes('/'))
-      .map((m) => {
-        const [s, d] = m.bloodPressure.split('/').map((v) => parseInt(v.trim(), 10));
-        return { sys: s, dia: d };
-      })
-      .filter((p) => !isNaN(p.sys) && !isNaN(p.dia));
-    if (data.length < 2) return null;
-
-    const W = 320, H = 110, pad = 14, MIN = 40, MAX = 200;
-    const y = (v: number) => +(H - pad - ((v - MIN) / (MAX - MIN)) * (H - 2 * pad)).toFixed(1);
-    const x = (i: number) => +(pad + (i * (W - 2 * pad)) / (data.length - 1)).toFixed(1);
-
-    return {
-      sys: data.map((p, i) => `${x(i)},${y(p.sys)}`).join(' '),
-      dia: data.map((p, i) => `${x(i)},${y(p.dia)}`).join(' '),
-      W, H,
-      last: data[data.length - 1],
-    };
-  });
-
-  // Adherencia a la medicación (AL DÍA vs PENDIENTE) — dona
   readonly medAdherence = computed(() => {
     let alDia = 0, pend = 0;
     for (const m of this.filtered()) {
@@ -116,13 +76,10 @@ export default class MonitoringPage {
       else pend++;
     }
     const total = alDia + pend;
-    const pct = total ? Math.round((alDia / total) * 100) : 0;
-    const circ = 2 * Math.PI * 42;
-    return { alDia, pend, total, pct, dash: +((pct / 100) * circ).toFixed(1), circ: +circ.toFixed(1) };
+    return { alDia, pend, total, pct: total ? Math.round((alDia / total) * 100) : 0 };
   });
 
-  // Monitoreos por mes (barras) — últimos 6 meses con datos
-  readonly monthlyCounts = computed(() => {
+  private monthlyData = computed(() => {
     const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
     const map = new Map<string, number>();
     for (const m of this.filtered()) {
@@ -130,13 +87,135 @@ export default class MonitoringPage {
       const key = m.monitoringDate.slice(0, 7);
       map.set(key, (map.get(key) ?? 0) + 1);
     }
-    const keys = [...map.keys()].sort().slice(-6);
-    const max = Math.max(1, ...keys.map((k) => map.get(k)!));
-    return keys.map((k) => {
+    return [...map.keys()].sort().slice(-6).map((k) => {
       const [yy, mm] = k.split('-');
-      return { label: `${meses[+mm - 1]} ${yy.slice(2)}`, count: map.get(k)!, pct: Math.round((map.get(k)! / max) * 100) };
+      return { label: `${meses[+mm - 1]} ${yy.slice(2)}`, count: map.get(k)! };
     });
   });
+
+  private recent(filterFn: (m: Monitoring) => boolean) {
+    return [...this.filtered()]
+      .filter((m) => m.monitoringDate && filterFn(m))
+      .sort((a, b) => (a.monitoringDate < b.monitoringDate ? -1 : 1))
+      .slice(-8);
+  }
+
+  // Banda verde del rango normal de temperatura (36–37.5 °C)
+  private readonly tempBand: Plugin = {
+    id: 'tempBand',
+    beforeDatasetsDraw(chart) {
+      const y = chart.scales['y'];
+      if (!y) return;
+      const { ctx, chartArea } = chart;
+      const top = y.getPixelForValue(37.5);
+      const bottom = y.getPixelForValue(36);
+      ctx.save();
+      ctx.fillStyle = 'rgba(22,163,74,0.10)';
+      ctx.fillRect(chartArea.left, top, chartArea.right - chartArea.left, bottom - top);
+      ctx.restore();
+    },
+  };
+
+  private axes(yMin?: number, yMax?: number): ChartConfiguration['options'] {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      scales: {
+        y: { min: yMin, max: yMax, ticks: { color: C.ink }, grid: { color: C.grid }, beginAtZero: yMin == null },
+        x: { ticks: { color: C.ink }, grid: { display: false } },
+      },
+    };
+  }
+
+  private readonly donutLegend = {
+    display: true, position: 'bottom' as const,
+    labels: { usePointStyle: true, boxWidth: 8, padding: 14, color: C.ink },
+  };
+
+  // Temperatura (línea + banda normal)
+  readonly tempCfg = computed<ChartConfiguration | null>(() => {
+    const data = this.recent((m) => m.temperature != null);
+    if (data.length < 2) return null;
+    return {
+      type: 'line',
+      data: {
+        labels: data.map((m) => m.monitoringDate!.slice(5)),
+        datasets: [{
+          label: 'Temp. °C',
+          data: data.map((m) => Number(m.temperature)),
+          borderColor: C.teal, backgroundColor: C.tealSoft, fill: true, tension: 0.35,
+          borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 6,
+          pointBackgroundColor: '#fff', pointBorderColor: C.teal, pointBorderWidth: 2,
+        }],
+      },
+      options: { ...this.axes(35, 40), plugins: { legend: { display: false } } },
+      plugins: [this.tempBand],
+    };
+  });
+
+  // Presión arterial (sistólica + diastólica)
+  readonly bpCfg = computed<ChartConfiguration | null>(() => {
+    const parsed = this.recent((m) => !!m.bloodPressure && m.bloodPressure.includes('/'))
+      .map((m) => {
+        const [s, d] = m.bloodPressure.split('/').map((v) => parseInt(v.trim(), 10));
+        return { date: m.monitoringDate!.slice(5), sys: s, dia: d };
+      })
+      .filter((p) => !isNaN(p.sys) && !isNaN(p.dia));
+    if (parsed.length < 2) return null;
+    return {
+      type: 'line',
+      data: {
+        labels: parsed.map((p) => p.date),
+        datasets: [
+          { label: 'Sistólica', data: parsed.map((p) => p.sys), borderColor: C.danger, backgroundColor: C.danger, tension: 0.35, borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6 },
+          { label: 'Diastólica', data: parsed.map((p) => p.dia), borderColor: C.teal, backgroundColor: C.teal, tension: 0.35, borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6 },
+        ],
+      },
+      options: { ...this.axes(40, 200), plugins: { legend: this.donutLegend } },
+    };
+  });
+
+  // Estado de signos vitales (dona)
+  readonly statusCfg = computed<ChartConfiguration>(() => {
+    const s = this.statusCounts();
+    return {
+      type: 'doughnut',
+      data: {
+        labels: ['Normal', 'Alerta', 'Crítico'],
+        datasets: [{ data: [s.normal, s.alerta, s.critico], backgroundColor: [C.ok, C.warn, C.danger], borderColor: '#fff', borderWidth: 2, hoverOffset: 6 }],
+      },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '64%', plugins: { legend: this.donutLegend } },
+    };
+  });
+
+  // Adherencia a la medicación (dona)
+  readonly medCfg = computed<ChartConfiguration>(() => {
+    const m = this.medAdherence();
+    return {
+      type: 'doughnut',
+      data: {
+        labels: ['Al día', 'Pendiente'],
+        datasets: [{ data: [m.alDia, m.pend], backgroundColor: [C.teal, C.track], borderColor: '#fff', borderWidth: 2, hoverOffset: 6 }],
+      },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: this.donutLegend } },
+    };
+  });
+
+  // Monitoreos por mes (barras)
+  readonly monthlyCfg = computed<ChartConfiguration>(() => {
+    const rows = this.monthlyData();
+    return {
+      type: 'bar',
+      data: {
+        labels: rows.map((r) => r.label),
+        datasets: [{ label: 'Monitoreos', data: rows.map((r) => r.count), backgroundColor: C.teal, borderRadius: 6, maxBarThickness: 46 }],
+      },
+      options: { ...this.axes(), plugins: { legend: { display: false } } },
+    };
+  });
+
+  readonly hasMonthly = computed(() => this.monthlyData().length > 0);
 
   // ── Formulario (crear/editar) ──
   readonly formOpen = signal(false);

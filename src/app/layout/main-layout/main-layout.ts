@@ -17,6 +17,7 @@ const NAV: NavItem[] = [
   { label: 'Centros de salud', icon: 'local_hospital', path: '/app/health-centers', roles: ['ADMIN', 'GUARDIAN', 'NURSE'] },
   { label: 'Suscripción', icon: 'workspace_premium', path: '/app/subscription', roles: ['ADMIN', 'GUARDIAN'] },
   { label: 'Usuarios', icon: 'group', path: '/app/users', roles: ['ADMIN'] },
+  { label: 'Enfermeros', icon: 'medical_services', path: '/app/nurses', roles: ['ADMIN'] },
 ];
 
 @Component({
@@ -43,6 +44,17 @@ export class MainLayout {
   });
 
   readonly roleClass = computed(() => `badge--${(this.user()?.role ?? '').toLowerCase()}`);
+  readonly roleLower = computed(() => (this.user()?.role ?? '').toLowerCase());
+
+  // Etiqueta del panel según el rol (refuerza la identidad de cada uno)
+  readonly panelTag = computed(() => {
+    switch (this.user()?.role) {
+      case 'GUARDIAN': return 'Panel familiar';
+      case 'NURSE': return 'Panel de enfermería';
+      case 'ADMIN': return 'Panel de administración';
+      default: return 'Cuidado del adulto mayor';
+    }
+  });
 
   toggleSidebar(): void {
     this.sidebarOpen.update((v) => !v);

@@ -61,6 +61,9 @@
 }
 .chart-card h3 .material-symbols-rounded { font-size: 20px; color: var(--blue-600); }
 .chart-svg { width: 100%; height: 120px; display: block; }
+/* Contenedor de los gráficos Chart.js (altura fija para que rendericen bien) */
+.chart-canvas { position: relative; width: 100%; height: 210px; margin-top: 0.4rem; }
+.chart-card--wide .chart-canvas { height: 240px; }
 .chart-foot { margin: 0.7rem 0 0; font-size: 0.76rem; }
 
 /* Presión: leyenda */

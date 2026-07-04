@@ -4,7 +4,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 import { TaytaApi } from '../../core/services/tayta-api.service';
-import { CalendarEntry, Elderly, Monitoring } from '../../core/models/domain.models';
+import { CalendarEntry, Elderly, Monitoring, NurseElderly } from '../../core/models/domain.models';
 
 interface StatCard {
   label: string;
@@ -48,8 +48,9 @@ export default class Dashboard {
 
   readonly user = this.auth.user;
   readonly loading = signal(true);
-  readonly stats = signal<StatCard[]>([]);
   readonly isGuardian = computed(() => this.user()?.role === 'GUARDIAN');
+  readonly isNurse = computed(() => this.user()?.role === 'NURSE');
+  readonly isAdmin = computed(() => this.user()?.role === 'ADMIN');
 
   // Modelo "Vitrina": apoderado sin plan activo
   readonly hasActivePlan = computed(() => !!this.gPlan());
@@ -102,13 +103,15 @@ export default class Dashboard {
     return this.flattenUpcoming(mine, this.today).slice(0, 3);
   });
 
-  readonly gStatus = computed(() => {
-    const s = (this.gLatest()?.vitalSignsStatus || '').toUpperCase();
+  private statusOf(m: Monitoring | null) {
+    const s = (m?.vitalSignsStatus || '').toUpperCase();
     if (s.startsWith('NORMAL')) return { label: 'Estable', cls: 'ok' };
     if (s.startsWith('ALERTA')) return { label: 'En alerta', cls: 'warn' };
     if (s) return { label: 'Crítico', cls: 'danger' };
     return { label: 'Sin datos', cls: 'muted' };
-  });
+  }
+
+  readonly gStatus = computed(() => this.statusOf(this.gLatest()));
 
   readonly greeting = computed(() => {
     const role = this.user()?.role;
@@ -143,8 +146,9 @@ export default class Dashboard {
     if (role === 'ADMIN') {
       return [
         { label: 'Usuarios', description: 'Gestiona cuentas y roles', icon: 'group', path: '/app/users' },
+        { label: 'Enfermeros', description: 'Asigna adultos (máx. 4)', icon: 'medical_services', path: '/app/nurses' },
+        { label: 'Suscripciones', description: 'Planes y pagos', icon: 'workspace_premium', path: '/app/subscription' },
         { label: 'Centros de salud', description: 'Administra los centros', icon: 'local_hospital', path: '/app/health-centers' },
-        { label: 'Adultos mayores', description: 'Registro general', icon: 'elderly', path: '/app/elderly' },
       ];
     }
     if (role === 'NURSE') {
@@ -157,12 +161,98 @@ export default class Dashboard {
     return [];
   });
 
+  // ── ENFERMERO: sus adultos asignados + sus monitoreos ──
+  readonly nAssigned = signal<Elderly[]>([]);
+  private readonly nMon = signal<Monitoring[]>([]);
+
+  private nLatestFor(id: number): Monitoring | null {
+    return this.nMon().find((m) => m.elderly?.id === id) ?? null; // nMon viene ordenado desc
+  }
+
+  readonly nElderlyCards = computed(() =>
+    this.nAssigned().map((e) => {
+      const latest = this.nLatestFor(e.id);
+      return { elderly: e, latest, status: this.statusOf(latest) };
+    }),
+  );
+
+  readonly nStats = computed(() => {
+    const month = this.today.slice(0, 7);
+    const monThisMonth = this.nMon().filter((m) => (m.monitoringDate || '').startsWith(month)).length;
+    const alerts = this.nElderlyCards().filter((c) => c.status.cls === 'warn' || c.status.cls === 'danger').length;
+    return { count: this.nAssigned().length, monThisMonth, alerts };
+  });
+
+  readonly nActivity = computed<ActivityItem[]>(() =>
+    this.nMon().slice(0, 5).map((m) => ({
+      icon: 'monitor_heart',
+      accent: 'blue',
+      text: `${m.elderly?.name || 'Adulto mayor'} · ${m.vitalSignsStatus || 's/d'}`,
+      time: `${m.monitoringDate}${m.monitoringTime ? ' · ' + m.monitoringTime.slice(0, 5) : ''}`,
+    })),
+  );
+
+  // ── ADMIN: métricas de gestión + alertas + distribución de roles ──
+  readonly aStats = signal<StatCard[]>([]);
+  readonly aRoles = signal<{ role: string; count: number }[]>([]);
+  readonly aAlerts = signal<Monitoring[]>([]);
+
   constructor() {
-    if (this.isGuardian()) {
-      this.loadGuardian();
-    } else {
-      this.loadStats();
-    }
+    if (this.isGuardian()) this.loadGuardian();
+    else if (this.isNurse()) this.loadNurse();
+    else this.loadAdmin();
+  }
+
+  private loadNurse(): void {
+    forkJoin({
+      mine: this.api.getMyNurseElderly().pipe(catchError(() => of([] as NurseElderly[]))),
+      mons: this.api.getMonitorings().pipe(catchError(() => of([] as Monitoring[]))),
+    }).subscribe((r) => {
+      this.nAssigned.set(r.mine.map((x) => x.elderly).filter((e): e is Elderly => !!e));
+      this.nMon.set(
+        [...r.mons].sort((a, b) =>
+          (a.monitoringDate + (a.monitoringTime ?? '')) < (b.monitoringDate + (b.monitoringTime ?? '')) ? 1 : -1,
+        ),
+      );
+      this.loading.set(false);
+    });
+  }
+
+  private loadAdmin(): void {
+    const today = this.today;
+    forkJoin({
+      users: this.api.getUsers().pipe(catchError(() => of([]))),
+      nurses: this.api.getNurses().pipe(catchError(() => of([]))),
+      elderly: this.api.getElderly().pipe(catchError(() => of([]))),
+      subs: this.api.countActiveSubscriptions().pipe(catchError(() => of({ count: 0 }))),
+      mons: this.api.getMonitorings().pipe(catchError(() => of([] as Monitoring[]))),
+    }).subscribe((r) => {
+      this.aStats.set([
+        { label: 'Usuarios totales', value: r.users.length, icon: 'group', accent: 'blue' },
+        { label: 'Enfermeros', value: r.nurses.length, icon: 'medical_services', accent: 'violet' },
+        { label: 'Adultos mayores', value: r.elderly.length, icon: 'elderly', accent: 'teal' },
+        { label: 'Suscripciones activas', value: r.subs.count, icon: 'workspace_premium', accent: 'green' },
+      ]);
+
+      const roleMap = new Map<string, number>();
+      for (const u of r.users) {
+        const role = u.role?.roleName || '—';
+        roleMap.set(role, (roleMap.get(role) ?? 0) + 1);
+      }
+      this.aRoles.set([...roleMap.entries()].map(([role, count]) => ({ role, count })));
+
+      this.aAlerts.set(
+        [...r.mons]
+          .filter((m) => {
+            const s = (m.vitalSignsStatus || '').toUpperCase();
+            return s && !s.startsWith('NORMAL');
+          })
+          .sort((a, b) => (a.monitoringDate < b.monitoringDate ? 1 : -1))
+          .slice(0, 6),
+      );
+
+      this.loading.set(false);
+    });
   }
 
   selectElderly(id: number): void {
@@ -205,41 +295,5 @@ export default class Dashboard {
     return out
       .filter((e) => e.date >= today)
       .sort((a, b) => (a.date + (a.time ?? '') < b.date + (b.time ?? '') ? -1 : 1));
-  }
-
-  // ── Carga ADMIN / NURSE (tarjetas de stats) ──
-  private loadStats(): void {
-    const role = this.user()?.role;
-    const today = new Date().toISOString().slice(0, 10);
-    const start = '2024-01-01';
-
-    if (role === 'ADMIN') {
-      forkJoin({
-        users: this.api.getUsers().pipe(catchError(() => of([]))),
-        centers: this.api.getHealthCenters().pipe(catchError(() => of([]))),
-        registered: this.api.countUsersRegistered(start, today).pipe(catchError(() => of({ count: 0 }))),
-        subs: this.api.countActiveSubscriptions().pipe(catchError(() => of({ count: 0 }))),
-      }).subscribe((r) => {
-        this.stats.set([
-          { label: 'Usuarios totales', value: r.users.length, icon: 'group', accent: 'blue' },
-          { label: 'Centros de salud', value: r.centers.length, icon: 'local_hospital', accent: 'teal' },
-          { label: 'Suscripciones activas', value: r.subs.count, icon: 'workspace_premium', accent: 'green' },
-          { label: 'Usuarios registrados', value: r.registered.count, icon: 'how_to_reg', accent: 'violet' },
-        ]);
-        this.loading.set(false);
-      });
-      return;
-    }
-
-    forkJoin({
-      elderly: this.api.getElderly().pipe(catchError(() => of([]))),
-      centers: this.api.getHealthCenters().pipe(catchError(() => of([]))),
-    }).subscribe((r) => {
-      this.stats.set([
-        { label: 'Adultos mayores', value: r.elderly.length, icon: 'elderly', accent: 'blue' },
-        { label: 'Centros de salud', value: r.centers.length, icon: 'local_hospital', accent: 'teal' },
-      ]);
-      this.loading.set(false);
-    });
   }
 }

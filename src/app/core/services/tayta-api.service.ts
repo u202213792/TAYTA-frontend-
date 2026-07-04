@@ -13,6 +13,7 @@ import {
   Monitoring,
   MonitoringPayload,
   Nurse,
+  NurseElderly,
   Payment,
   Subscription,
   SubscribePayload,
@@ -67,6 +68,24 @@ export class TaytaApi {
 
   getNurses(): Observable<Nurse[]> {
     return this.http.get<Nurse[]>(`${this.base}/nurses`);
+  }
+
+  // ── Asignación enfermero↔adulto (ADMIN) ──
+  getNurseElderly(): Observable<NurseElderly[]> {
+    return this.http.get<NurseElderly[]>(`${this.base}/nurse-elderly`);
+  }
+
+  // Adultos mayores asignados al enfermero autenticado
+  getMyNurseElderly(): Observable<NurseElderly[]> {
+    return this.http.get<NurseElderly[]>(`${this.base}/nurse-elderly/mine`);
+  }
+
+  assignNurseElderly(nurseId: number, elderlyId: number): Observable<NurseElderly> {
+    return this.http.post<NurseElderly>(`${this.base}/nurse-elderly`, { nurseId, elderlyId });
+  }
+
+  unassignNurseElderly(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/nurse-elderly/${id}`);
   }
 
   getCalendars(): Observable<CalendarEntry[]> {

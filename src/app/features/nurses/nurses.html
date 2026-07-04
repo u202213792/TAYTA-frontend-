@@ -1,0 +1,83 @@
+<header class="page-head">
+  <div>
+    <h1>Enfermeros</h1>
+    <p>Perfil de cada enfermero y los adultos mayores que tiene a su cargo. Máximo {{ MAX }} por enfermero.</p>
+  </div>
+  <span class="head-icon material-symbols-rounded">medical_services</span>
+</header>
+
+@if (loading()) {
+  <div class="state">Cargando enfermeros…</div>
+} @else if (error()) {
+  <div class="state state--error">No se pudieron cargar los enfermeros.</div>
+} @else if (cards().length === 0) {
+  <div class="state">No hay enfermeros registrados.</div>
+} @else {
+  <div class="nurse-grid">
+    @for (card of cards(); track card.nurse.id) {
+      <article class="nurse-card">
+        <div class="nurse-head">
+          <span class="nurse-avatar">{{ nurseName(card.nurse).slice(0,2).toUpperCase() }}</span>
+          <div class="nurse-id">
+            <strong>{{ nurseName(card.nurse) }}</strong>
+            <span class="muted">{{ card.nurse.licenseNumber || 'Sin licencia' }}</span>
+          </div>
+          <span class="count-badge" [class.count-badge--full]="card.full">
+            {{ card.count }}/{{ MAX }}
+          </span>
+        </div>
+
+        <div class="assigned">
+          <span class="assigned-label">A su cargo:</span>
+          @if (card.assigned.length === 0) {
+            <span class="muted">Sin adultos asignados.</span>
+          } @else {
+            <ul class="chip-list">
+              @for (a of card.assigned; track a.assignmentId) {
+                <li class="chip">
+                  <span class="material-symbols-rounded">elderly</span>
+                  {{ elderlyName(a.elderly) }}
+                  <button class="chip-x" title="Quitar" (click)="unassign(a.assignmentId)">
+                    <span class="material-symbols-rounded">close</span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="assign-row">
+          @if (card.full) {
+            <p class="full-note">
+              <span class="material-symbols-rounded">info</span>
+              Máximo alcanzado. Asigna a otro enfermero.
+            </p>
+          } @else {
+            <select
+              [ngModel]="selected()[card.nurse.id] || 0"
+              (ngModelChange)="setSelected(card.nurse.id, $event)"
+              [disabled]="card.available.length === 0">
+              <option [ngValue]="0" disabled>Elegir adulto mayor…</option>
+              @for (e of card.available; track e.id) {
+                <option [ngValue]="e.id">{{ elderlyName(e) }}</option>
+              }
+            </select>
+            <button
+              class="btn"
+              (click)="assign(card.nurse.id)"
+              [disabled]="!selected()[card.nurse.id] || busy() !== null">
+              {{ busy() === card.nurse.id ? 'Asignando…' : 'Asignar' }}
+            </button>
+          }
+        </div>
+
+        @if (assignError()[card.nurse.id]) {
+          <p class="assign-err">
+            <span class="material-symbols-rounded">error</span>
+            {{ assignError()[card.nurse.id] }}
+          </p>
+        }
+      </article>
+    }
+  </div>
+}

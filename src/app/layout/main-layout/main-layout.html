@@ -1,4 +1,7 @@
-<div class="layout">
+<div class="layout"
+  [class.layout--guardian]="roleLower() === 'guardian'"
+  [class.layout--nurse]="roleLower() === 'nurse'"
+  [class.layout--admin]="roleLower() === 'admin'">
 
   <!-- Overlay móvil -->
   @if (sidebarOpen()) {
@@ -11,7 +14,7 @@
       <img src="tayta-logo.svg" class="brand-logo" alt="TAYTA">
       <div class="brand-text">
         <span class="brand-name">TAYTA</span>
-        <span class="brand-tag">Cuidado del adulto mayor</span>
+        <span class="brand-tag">{{ panelTag() }}</span>
       </div>
     </div>
 

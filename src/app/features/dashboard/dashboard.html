@@ -161,8 +161,85 @@
     </div>
   }
 
+} @else if (isNurse()) {
+  <!-- ====== Dashboard ENFERMERO — centrado en sus adultos y sus datos ====== -->
+  <section class="hero" [class]="heroClass()">
+    <div>
+      <p class="hero-kicker">{{ greeting() }}</p>
+      <h1 class="hero-title">Hola, {{ user()?.username }} 👋</h1>
+      <p class="hero-sub">{{ heroNote() }}</p>
+    </div>
+    <span class="hero-icon material-symbols-rounded">{{ heroIcon() }}</span>
+  </section>
+
+  <section class="stats">
+    @if (loading()) {
+      @for (s of [1,2,3]; track s) { <div class="stat-card stat-card--skeleton"></div> }
+    } @else {
+      <div class="stat-card">
+        <span class="stat-icon" data-accent="blue"><span class="material-symbols-rounded">elderly</span></span>
+        <div class="stat-body"><span class="stat-value">{{ nStats().count }}</span><span class="stat-label">Adultos a mi cargo</span></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon" data-accent="teal"><span class="material-symbols-rounded">monitor_heart</span></span>
+        <div class="stat-body"><span class="stat-value">{{ nStats().monThisMonth }}</span><span class="stat-label">Monitoreos este mes</span></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon" data-accent="amber"><span class="material-symbols-rounded">warning</span></span>
+        <div class="stat-body"><span class="stat-value">{{ nStats().alerts }}</span><span class="stat-label">Adultos en alerta</span></div>
+      </div>
+    }
+  </section>
+
+  <div class="nsplit">
+    <section>
+      <div class="sec-head">
+        <h2 class="section-title">Mis adultos mayores</h2>
+        <a class="btn btn--sm" routerLink="/app/monitoring"><span class="material-symbols-rounded">add</span> Registrar</a>
+      </div>
+      @if (nElderlyCards().length) {
+        <div class="pt-grid">
+          @for (c of nElderlyCards(); track c.elderly.id) {
+            <a class="pt-card" [routerLink]="['/app/elderly', c.elderly.id]">
+              <div class="pt-top">
+                <span class="pt-avatar">{{ (c.elderly.name || c.elderly.dni || '?').slice(0,2).toUpperCase() }}</span>
+                <span class="status status--{{ c.status.cls }}">{{ c.status.label }}</span>
+              </div>
+              <strong class="pt-name">{{ c.elderly.name || ('DNI ' + c.elderly.dni) }}</strong>
+              @if (c.latest) {
+                <div class="pt-vitals">
+                  <span><span class="material-symbols-rounded">thermostat</span>{{ c.latest.temperature ? c.latest.temperature + '°' : '—' }}</span>
+                  <span><span class="material-symbols-rounded">cardiology</span>{{ c.latest.bloodPressure || '—' }}</span>
+                </div>
+                <span class="pt-date">Último control: {{ c.latest.monitoringDate }}</span>
+              } @else {
+                <span class="pt-date muted">Sin monitoreos aún</span>
+              }
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="state">Aún no tienes adultos mayores asignados. El administrador debe asignártelos.</div>
+      }
+    </section>
+
+    <section class="activity">
+      <h2 class="section-title">Actividad reciente</h2>
+      @if (nActivity().length) {
+        <div class="act-list">
+          @for (a of nActivity(); track $index) {
+            <div class="act-item">
+              <span class="act-ico act-ico--{{ a.accent }} material-symbols-rounded">{{ a.icon }}</span>
+              <div class="act-text"><strong>{{ a.text }}</strong><span>{{ a.time }}</span></div>
+            </div>
+          }
+        </div>
+      } @else { <div class="state">Sin monitoreos registrados aún.</div> }
+    </section>
+  </div>
+
 } @else {
-  <!-- ====== Dashboard ADMIN / NURSE ====== -->
+  <!-- ====== Dashboard ADMIN — gestión de la plataforma ====== -->
   <section class="hero" [class]="heroClass()">
     <div>
       <p class="hero-kicker">{{ greeting() }}</p>
@@ -176,19 +253,47 @@
     @if (loading()) {
       @for (s of [1,2,3,4]; track s) { <div class="stat-card stat-card--skeleton"></div> }
     } @else {
-      @for (s of stats(); track s.label) {
+      @for (s of aStats(); track s.label) {
         <div class="stat-card">
           <span class="stat-icon" [attr.data-accent]="s.accent"><span class="material-symbols-rounded">{{ s.icon }}</span></span>
-          <div class="stat-body">
-            <span class="stat-value">{{ s.value }}</span>
-            <span class="stat-label">{{ s.label }}</span>
-          </div>
+          <div class="stat-body"><span class="stat-value">{{ s.value }}</span><span class="stat-label">{{ s.label }}</span></div>
         </div>
       }
     }
   </section>
 
-  <h2 class="section-title">Accesos rápidos</h2>
+  <div class="nsplit">
+    <section class="activity">
+      <h2 class="section-title">Requiere atención</h2>
+      @if (aAlerts().length) {
+        <div class="act-list">
+          @for (m of aAlerts(); track m.id) {
+            <div class="act-item">
+              <span class="act-ico act-ico--amber material-symbols-rounded">warning</span>
+              <div class="act-text">
+                <strong>{{ m.elderly?.name || 'Adulto mayor' }} · {{ m.vitalSignsStatus }}</strong>
+                <span>{{ m.monitoringDate }}{{ m.nurse?.user?.username ? ' · ' + m.nurse?.user?.username : '' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      } @else { <div class="state">Sin alertas. Todo en orden ✅</div> }
+    </section>
+
+    <section>
+      <h2 class="section-title">Usuarios por rol</h2>
+      <div class="role-dist">
+        @for (r of aRoles(); track r.role) {
+          <div class="role-row">
+            <span class="badge badge--{{ r.role.toLowerCase() }}">{{ r.role }}</span>
+            <b>{{ r.count }}</b>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+
+  <h2 class="section-title">Gestión</h2>
   <section class="actions">
     @for (a of quickActions(); track a.path) {
       <a class="action-card" [routerLink]="a.path">
