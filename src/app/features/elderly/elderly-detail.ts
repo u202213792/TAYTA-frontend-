@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TaytaApi } from '../../core/services/tayta-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CalendarEntry, Elderly, ElderlyPayload, Monitoring } from '../../core/models/domain.models';
@@ -17,7 +18,7 @@ interface ProfileEvent {
 
 @Component({
   selector: 'app-elderly-detail',
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: './elderly-detail.html',
   styleUrl: './elderly-detail.scss',
 })
@@ -94,14 +95,14 @@ export default class ElderlyDetail {
   readonly canDelete = computed(() => this.auth.user()?.role === 'ADMIN');
 
   readonly title = computed(() => {
-    if (this.isNew) return 'Nuevo adulto mayor';
-    return this.model?.name || this.model?.user?.username || (this.model ? `DNI ${this.model.dni}` : 'Adulto mayor');
+    if (this.isNew) return 'elderly.detail.titleNew';
+    return this.model?.name || this.model?.user?.username || (this.model ? `DNI ${this.model.dni}` : 'elderly.detail.titleFallback');
   });
 
   readonly bloodTypes = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
   readonly genders = [
-    { v: 'M', label: 'Masculino' },
-    { v: 'F', label: 'Femenino' },
+    { v: 'M', label: 'elderly.detail.gender.M' },
+    { v: 'F', label: 'elderly.detail.gender.F' },
   ];
 
   constructor() {
@@ -135,10 +136,10 @@ export default class ElderlyDetail {
     this.api.getCalendars().subscribe((list) => {
       const ev: ProfileEvent[] = [];
       for (const c of list.filter((c) => c.elderly?.id === eid)) {
-        if (c.appointmentDate) ev.push({ label: 'Cita médica', icon: 'event_available', date: c.appointmentDate, time: c.appointmentTime, detail: null });
-        if (c.medicineDate) ev.push({ label: 'Medicación', icon: 'medication', date: c.medicineDate, time: c.medicineTime, detail: null });
-        if (c.therapyDate) ev.push({ label: 'Terapia', icon: 'healing', date: c.therapyDate, time: c.therapyTime, detail: null });
-        if (c.vaccines) ev.push({ label: 'Vacuna', icon: 'vaccines', date: c.therapyDate || c.appointmentDate || today, time: null, detail: c.vaccines });
+        if (c.appointmentDate) ev.push({ label: 'elderly.detail.event.appointment', icon: 'event_available', date: c.appointmentDate, time: c.appointmentTime, detail: null });
+        if (c.medicineDate) ev.push({ label: 'elderly.detail.event.medication', icon: 'medication', date: c.medicineDate, time: c.medicineTime, detail: null });
+        if (c.therapyDate) ev.push({ label: 'elderly.detail.event.therapy', icon: 'healing', date: c.therapyDate, time: c.therapyTime, detail: null });
+        if (c.vaccines) ev.push({ label: 'elderly.detail.event.vaccine', icon: 'vaccines', date: c.therapyDate || c.appointmentDate || today, time: null, detail: c.vaccines });
       }
       this.events.set(ev.filter((e) => e.date >= today).sort((a, b) => (a.date < b.date ? -1 : 1)).slice(0, 5));
     });

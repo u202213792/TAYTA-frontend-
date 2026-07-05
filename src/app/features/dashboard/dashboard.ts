@@ -4,6 +4,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 import { TaytaApi } from '../../core/services/tayta-api.service';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CalendarEntry, Elderly, Monitoring, NurseElderly } from '../../core/models/domain.models';
 
 interface StatCard {
@@ -23,7 +24,8 @@ interface QuickAction {
 interface ActivityItem {
   icon: string;
   accent: string;
-  text: string;
+  labelKey: string;
+  detail: string;
   time: string;
 }
 
@@ -38,7 +40,7 @@ interface UpcomingEvent {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -91,7 +93,8 @@ export default class Dashboard {
       .map((m) => ({
         icon: 'monitor_heart',
         accent: 'violet',
-        text: `Monitoreo (${m.vitalSignsStatus || 's/d'})` + (m.nurse?.user?.username ? ` · ${m.nurse.user.username}` : ''),
+        labelKey: 'dashboard.act.monitoring',
+        detail: `(${m.vitalSignsStatus || 's/d'})` + (m.nurse?.user?.username ? ` · ${m.nurse.user.username}` : ''),
         time: `${m.monitoringDate}${m.monitoringTime ? ' · ' + m.monitoringTime.slice(0, 5) : ''}`,
       }));
   });
@@ -105,19 +108,19 @@ export default class Dashboard {
 
   private statusOf(m: Monitoring | null) {
     const s = (m?.vitalSignsStatus || '').toUpperCase();
-    if (s.startsWith('NORMAL')) return { label: 'Estable', cls: 'ok' };
-    if (s.startsWith('ALERTA')) return { label: 'En alerta', cls: 'warn' };
-    if (s) return { label: 'Crítico', cls: 'danger' };
-    return { label: 'Sin datos', cls: 'muted' };
+    if (s.startsWith('NORMAL')) return { label: 'dashboard.status.ok', cls: 'ok' };
+    if (s.startsWith('ALERTA')) return { label: 'dashboard.status.warn', cls: 'warn' };
+    if (s) return { label: 'dashboard.status.danger', cls: 'danger' };
+    return { label: 'dashboard.status.none', cls: 'muted' };
   }
 
   readonly gStatus = computed(() => this.statusOf(this.gLatest()));
 
   readonly greeting = computed(() => {
     const role = this.user()?.role;
-    if (role === 'ADMIN') return 'Panel de administración';
-    if (role === 'NURSE') return 'Panel del personal de enfermería';
-    return 'Panel del apoderado';
+    if (role === 'ADMIN') return 'dashboard.greeting.admin';
+    if (role === 'NURSE') return 'dashboard.greeting.nurse';
+    return 'dashboard.greeting.guardian';
   });
 
   readonly heroClass = computed(() => {
@@ -136,26 +139,26 @@ export default class Dashboard {
 
   readonly heroNote = computed(() => {
     const role = this.user()?.role;
-    if (role === 'ADMIN') return 'Gestiona la plataforma y revisa las métricas clave.';
-    if (role === 'NURSE') return 'Registra el monitoreo y organiza la atención del día.';
-    return 'Sigue de cerca la salud y el cuidado de tu adulto mayor.';
+    if (role === 'ADMIN') return 'dashboard.hero.admin';
+    if (role === 'NURSE') return 'dashboard.hero.nurse';
+    return 'dashboard.hero.guardian';
   });
 
   readonly quickActions = computed<QuickAction[]>(() => {
     const role = this.user()?.role;
     if (role === 'ADMIN') {
       return [
-        { label: 'Usuarios', description: 'Gestiona cuentas y roles', icon: 'group', path: '/app/users' },
-        { label: 'Enfermeros', description: 'Asigna adultos (máx. 4)', icon: 'medical_services', path: '/app/nurses' },
-        { label: 'Suscripciones', description: 'Planes y pagos', icon: 'workspace_premium', path: '/app/subscription' },
-        { label: 'Centros de salud', description: 'Administra los centros', icon: 'local_hospital', path: '/app/health-centers' },
+        { label: 'dashboard.qa.users', description: 'dashboard.qa.usersDesc', icon: 'group', path: '/app/users' },
+        { label: 'dashboard.qa.nurses', description: 'dashboard.qa.nursesDesc', icon: 'medical_services', path: '/app/nurses' },
+        { label: 'dashboard.qa.subs', description: 'dashboard.qa.subsDesc', icon: 'workspace_premium', path: '/app/subscription' },
+        { label: 'dashboard.qa.centers', description: 'dashboard.qa.centersDesc', icon: 'local_hospital', path: '/app/health-centers' },
       ];
     }
     if (role === 'NURSE') {
       return [
-        { label: 'Registrar monitoreo', description: 'Signos vitales y observaciones', icon: 'monitor_heart', path: '/app/monitoring' },
-        { label: 'Calendario clínico', description: 'Citas, terapias y vacunas', icon: 'calendar_month', path: '/app/calendar' },
-        { label: 'Mis pacientes', description: 'Adultos mayores asignados', icon: 'elderly', path: '/app/elderly' },
+        { label: 'dashboard.qa.monitoring', description: 'dashboard.qa.monitoringDesc', icon: 'monitor_heart', path: '/app/monitoring' },
+        { label: 'dashboard.qa.calendar', description: 'dashboard.qa.calendarDesc', icon: 'calendar_month', path: '/app/calendar' },
+        { label: 'dashboard.qa.patients', description: 'dashboard.qa.patientsDesc', icon: 'elderly', path: '/app/elderly' },
       ];
     }
     return [];
@@ -187,7 +190,8 @@ export default class Dashboard {
     this.nMon().slice(0, 5).map((m) => ({
       icon: 'monitor_heart',
       accent: 'blue',
-      text: `${m.elderly?.name || 'Adulto mayor'} · ${m.vitalSignsStatus || 's/d'}`,
+      labelKey: '',
+      detail: `${m.elderly?.name || ''} · ${m.vitalSignsStatus || 's/d'}`,
       time: `${m.monitoringDate}${m.monitoringTime ? ' · ' + m.monitoringTime.slice(0, 5) : ''}`,
     })),
   );
@@ -228,10 +232,10 @@ export default class Dashboard {
       mons: this.api.getMonitorings().pipe(catchError(() => of([] as Monitoring[]))),
     }).subscribe((r) => {
       this.aStats.set([
-        { label: 'Usuarios totales', value: r.users.length, icon: 'group', accent: 'blue' },
-        { label: 'Enfermeros', value: r.nurses.length, icon: 'medical_services', accent: 'violet' },
-        { label: 'Adultos mayores', value: r.elderly.length, icon: 'elderly', accent: 'teal' },
-        { label: 'Suscripciones activas', value: r.subs.count, icon: 'workspace_premium', accent: 'green' },
+        { label: 'dashboard.admin.totalUsers', value: r.users.length, icon: 'group', accent: 'blue' },
+        { label: 'dashboard.admin.nurses', value: r.nurses.length, icon: 'medical_services', accent: 'violet' },
+        { label: 'dashboard.admin.elderly', value: r.elderly.length, icon: 'elderly', accent: 'teal' },
+        { label: 'dashboard.admin.activeSubs', value: r.subs.count, icon: 'workspace_premium', accent: 'green' },
       ]);
 
       const roleMap = new Map<string, number>();
@@ -288,9 +292,9 @@ export default class Dashboard {
   private flattenUpcoming(entries: CalendarEntry[], today: string): UpcomingEvent[] {
     const out: UpcomingEvent[] = [];
     for (const c of entries) {
-      if (c.appointmentDate) out.push({ type: 'cita', icon: 'event_available', accent: 'blue', label: 'Cita médica', date: c.appointmentDate, time: c.appointmentTime });
-      if (c.medicineDate) out.push({ type: 'med', icon: 'medication', accent: 'violet', label: 'Medicación', date: c.medicineDate, time: c.medicineTime });
-      if (c.therapyDate) out.push({ type: 'ter', icon: 'healing', accent: 'teal', label: 'Terapia', date: c.therapyDate, time: c.therapyTime });
+      if (c.appointmentDate) out.push({ type: 'cita', icon: 'event_available', accent: 'blue', label: 'dashboard.event.appointment', date: c.appointmentDate, time: c.appointmentTime });
+      if (c.medicineDate) out.push({ type: 'med', icon: 'medication', accent: 'violet', label: 'dashboard.event.medication', date: c.medicineDate, time: c.medicineTime });
+      if (c.therapyDate) out.push({ type: 'ter', icon: 'healing', accent: 'teal', label: 'dashboard.event.therapy', date: c.therapyDate, time: c.therapyTime });
     }
     return out
       .filter((e) => e.date >= today)

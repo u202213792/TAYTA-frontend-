@@ -1,7 +1,9 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TaytaApi } from '../../core/services/tayta-api.service';
 import { AuthService } from '../../core/services/auth.service';
+import { LanguageService } from '../../core/services/language.service';
 import { CalendarEntry, CalendarPayload, Elderly } from '../../core/models/domain.models';
 import { extractError } from '../../core/utils/http-error';
 
@@ -17,17 +19,15 @@ interface AgendaEvent {
 }
 
 const TYPE_META: Record<EventType, { label: string; icon: string; accent: string }> = {
-  cita: { label: 'Cita médica', icon: 'event_available', accent: 'blue' },
-  medicacion: { label: 'Medicación', icon: 'medication', accent: 'violet' },
-  terapia: { label: 'Terapia', icon: 'healing', accent: 'teal' },
-  vacuna: { label: 'Vacuna', icon: 'vaccines', accent: 'green' },
+  cita: { label: 'calendar.type.cita', icon: 'event_available', accent: 'blue' },
+  medicacion: { label: 'calendar.type.medicacion', icon: 'medication', accent: 'violet' },
+  terapia: { label: 'calendar.type.terapia', icon: 'healing', accent: 'teal' },
+  vacuna: { label: 'calendar.type.vacuna', icon: 'vaccines', accent: 'green' },
 };
-
-const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
 @Component({
   selector: 'app-calendar',
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })
@@ -43,12 +43,14 @@ export default class CalendarPage {
   readonly filter = signal<EventType | 'todos'>('todos');
   private readonly today = new Date().toISOString().slice(0, 10);
 
+  private readonly lang = inject(LanguageService);
+
   readonly filters: { key: EventType | 'todos'; label: string }[] = [
-    { key: 'todos', label: 'Todos' },
-    { key: 'cita', label: 'Citas' },
-    { key: 'medicacion', label: 'Medicación' },
-    { key: 'terapia', label: 'Terapias' },
-    { key: 'vacuna', label: 'Vacunas' },
+    { key: 'todos', label: 'calendar.filters.todos' },
+    { key: 'cita', label: 'calendar.filters.cita' },
+    { key: 'medicacion', label: 'calendar.filters.medicacion' },
+    { key: 'terapia', label: 'calendar.filters.terapia' },
+    { key: 'vacuna', label: 'calendar.filters.vacuna' },
   ];
 
   // Filtro por adulto mayor
@@ -144,7 +146,8 @@ export default class CalendarPage {
   }
 
   month(date: string): string {
-    return MONTHS[new Date(date + 'T00:00:00').getMonth()];
+    const locale = this.lang.current() === 'en' ? 'en-US' : 'es-ES';
+    return new Date(date + 'T00:00:00').toLocaleDateString(locale, { month: 'short' });
   }
 
   isUpcoming(date: string): boolean {

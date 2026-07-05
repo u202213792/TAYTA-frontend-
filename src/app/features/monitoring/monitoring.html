@@ -1,12 +1,12 @@
 <header class="page-head">
   <div>
-    <h1>Monitoreo</h1>
-    <p>Registros de signos vitales y estado de los adultos mayores.</p>
+    <h1>{{ 'monitoring.title' | translate }}</h1>
+    <p>{{ 'monitoring.subtitle' | translate }}</p>
   </div>
   @if (isNurse()) {
     <button class="btn" (click)="formOpen() ? closeForm() : openNew()">
       <span class="material-symbols-rounded">{{ formOpen() ? 'close' : 'add' }}</span>
-      {{ formOpen() ? 'Cancelar' : 'Registrar monitoreo' }}
+      {{ (formOpen() ? 'common.cancel' : 'monitoring.register') | translate }}
     </button>
   } @else {
     <span class="head-icon material-symbols-rounded">monitor_heart</span>
@@ -16,12 +16,12 @@
 <!-- Formulario (crear/editar) -->
 @if (formOpen()) {
   <form class="form-card" (ngSubmit)="submit()" #f="ngForm">
-    <h3>{{ formTitle }}</h3>
+    <h3>{{ formTitle | translate }}</h3>
     <div class="grid-form">
       <label>
-        Adulto mayor
+        {{ 'monitoring.fElderly' | translate }}
         <select name="elderlyId" [(ngModel)]="form.elderlyId" required>
-          <option [ngValue]="null" disabled>Selecciona…</option>
+          <option [ngValue]="null" disabled>{{ 'common.select' | translate }}</option>
           @for (e of elderlyOptions(); track e.id) {
             <option [ngValue]="e.id">{{ e.name || e.user?.username || ('DNI ' + e.dni) }}</option>
           }
@@ -29,36 +29,36 @@
       </label>
 
       <label>
-        Estado signos vitales
+        {{ 'monitoring.fVital' | translate }}
         <select name="vital" [(ngModel)]="form.vitalSignsStatus">
-          @for (v of vitalOptions; track v) { <option [ngValue]="v">{{ v }}</option> }
+          @for (v of vitalOptions; track v) { <option [ngValue]="v">{{ ('monitoring.vital.' + v) | translate }}</option> }
         </select>
       </label>
 
-      <label>Fecha <input type="date" name="date" [(ngModel)]="form.monitoringDate" required></label>
-      <label>Hora <input type="time" name="time" [(ngModel)]="form.monitoringTime" required></label>
-      <label>Temperatura (°C) <input type="number" step="0.1" min="30" max="45" name="temp" [(ngModel)]="form.temperature" required></label>
-      <label>Presión arterial <input type="text" name="bp" [(ngModel)]="form.bloodPressure" placeholder="120/80" pattern="\d{2,3}/\d{2,3}" title="Formato: sistólica/diastólica, ej. 120/80"></label>
+      <label>{{ 'monitoring.fDate' | translate }} <input type="date" name="date" [(ngModel)]="form.monitoringDate" required></label>
+      <label>{{ 'monitoring.fTime' | translate }} <input type="time" name="time" [(ngModel)]="form.monitoringTime" required></label>
+      <label>{{ 'monitoring.fTemp' | translate }} <input type="number" step="0.1" min="30" max="45" name="temp" [(ngModel)]="form.temperature" required></label>
+      <label>{{ 'monitoring.fBp' | translate }} <input type="text" name="bp" [(ngModel)]="form.bloodPressure" placeholder="120/80" pattern="\d{2,3}/\d{2,3}" [title]="'monitoring.bpHint' | translate"></label>
 
       <label>
-        Estado medicación
+        {{ 'monitoring.fMed' | translate }}
         <select name="med" [(ngModel)]="form.medicineStatus">
-          @for (m of medicineOptions; track m) { <option [ngValue]="m">{{ m }}</option> }
+          @for (m of medicineOptions; track m) { <option [ngValue]="m">{{ ('monitoring.med.' + m) | translate }}</option> }
         </select>
       </label>
 
       <label class="full">
-        Observaciones
-        <textarea name="obs" rows="2" [(ngModel)]="form.observations" placeholder="Notas del control…"></textarea>
+        {{ 'monitoring.fObs' | translate }}
+        <textarea name="obs" rows="2" [(ngModel)]="form.observations" [placeholder]="'monitoring.obsPh' | translate"></textarea>
       </label>
     </div>
 
     @if (formError()) { <p class="form-err">{{ formError() }}</p> }
 
     <div class="form-actions">
-      <button type="button" class="btn btn--ghost" (click)="closeForm()">Cancelar</button>
+      <button type="button" class="btn btn--ghost" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
       <button type="submit" class="btn" [disabled]="!f.valid || saving()">
-        {{ saving() ? 'Guardando…' : 'Guardar' }}
+        {{ (saving() ? 'common.saving' : 'common.save') | translate }}
       </button>
     </div>
   </form>
@@ -68,48 +68,43 @@
 @if (!loading() && !error() && items().length > 0) {
   <section class="charts">
 
-    <!-- Temperatura (línea + banda normal) -->
     <div class="chart-card">
-      <h3><span class="material-symbols-rounded">thermostat</span> Temperatura (°C)</h3>
+      <h3><span class="material-symbols-rounded">thermostat</span> {{ 'monitoring.tempTitle' | translate }}</h3>
       @if (tempCfg(); as cfg) {
         <div class="chart-canvas"><app-chart [config]="cfg"></app-chart></div>
-        <p class="muted chart-foot">Banda verde = rango normal (36–37.5 °C)</p>
+        <p class="muted chart-foot">{{ 'monitoring.tempBand' | translate }}</p>
       } @else {
-        <p class="muted">Se necesitan al menos 2 controles.</p>
+        <p class="muted">{{ 'monitoring.need2' | translate }}</p>
       }
     </div>
 
-    <!-- Presión arterial -->
     <div class="chart-card">
-      <h3><span class="material-symbols-rounded">cardiology</span> Presión arterial</h3>
+      <h3><span class="material-symbols-rounded">cardiology</span> {{ 'monitoring.bpTitle' | translate }}</h3>
       @if (bpCfg(); as cfg) {
         <div class="chart-canvas"><app-chart [config]="cfg"></app-chart></div>
       } @else {
-        <p class="muted">Se necesitan al menos 2 controles con presión.</p>
+        <p class="muted">{{ 'monitoring.need2bp' | translate }}</p>
       }
     </div>
 
-    <!-- Estado de signos vitales (dona) -->
     <div class="chart-card">
-      <h3><span class="material-symbols-rounded">ecg_heart</span> Estado de signos vitales</h3>
+      <h3><span class="material-symbols-rounded">ecg_heart</span> {{ 'monitoring.statusTitle' | translate }}</h3>
       <div class="chart-canvas"><app-chart [config]="statusCfg()"></app-chart></div>
-      <p class="muted chart-foot">Total de monitoreos: {{ statusCounts().total }}</p>
+      <p class="muted chart-foot">{{ 'monitoring.total' | translate }} {{ statusCounts().total }}</p>
     </div>
 
-    <!-- Adherencia a la medicación (dona) -->
     <div class="chart-card">
-      <h3><span class="material-symbols-rounded">medication</span> Adherencia a la medicación</h3>
+      <h3><span class="material-symbols-rounded">medication</span> {{ 'monitoring.medTitle' | translate }}</h3>
       <div class="chart-canvas"><app-chart [config]="medCfg()"></app-chart></div>
-      <p class="muted chart-foot">{{ medAdherence().pct }}% al día · {{ medAdherence().alDia }}/{{ medAdherence().total }}</p>
+      <p class="muted chart-foot">{{ medAdherence().pct }}{{ 'monitoring.medFoot' | translate }} · {{ medAdherence().alDia }}/{{ medAdherence().total }}</p>
     </div>
 
-    <!-- Monitoreos por mes (barras) -->
     <div class="chart-card chart-card--wide">
-      <h3><span class="material-symbols-rounded">bar_chart</span> Monitoreos por mes</h3>
+      <h3><span class="material-symbols-rounded">bar_chart</span> {{ 'monitoring.monthlyTitle' | translate }}</h3>
       @if (hasMonthly()) {
         <div class="chart-canvas"><app-chart [config]="monthlyCfg()"></app-chart></div>
       } @else {
-        <p class="muted">Sin datos por mes.</p>
+        <p class="muted">{{ 'monitoring.noMonthly' | translate }}</p>
       }
     </div>
 
@@ -120,9 +115,9 @@
 @if (!loading() && !error() && filterOptions().length > 0) {
   <div class="filter-bar">
     <span class="material-symbols-rounded">filter_alt</span>
-    <label for="elderlyFilter">Adulto mayor:</label>
+    <label for="elderlyFilter">{{ 'monitoring.filterElderly' | translate }}</label>
     <select id="elderlyFilter" [ngModel]="elderlyFilter()" (ngModelChange)="elderlyFilter.set($event)">
-      <option [ngValue]="'all'">Todos</option>
+      <option [ngValue]="'all'">{{ 'common.all' | translate }}</option>
       @for (o of filterOptions(); track o.id) {
         <option [ngValue]="o.id">{{ o.label }}</option>
       }
@@ -132,24 +127,24 @@
 
 <!-- Lista -->
 @if (loading()) {
-  <div class="state">Cargando monitoreos…</div>
+  <div class="state">{{ 'monitoring.loading' | translate }}</div>
 } @else if (error()) {
-  <div class="state state--error">No se pudieron cargar los monitoreos.</div>
+  <div class="state state--error">{{ 'monitoring.loadError' | translate }}</div>
 } @else if (filtered().length === 0) {
-  <div class="state">No hay monitoreos para mostrar.</div>
+  <div class="state">{{ 'monitoring.empty' | translate }}</div>
 } @else {
   <div class="table-card">
     <table class="table">
       <thead>
         <tr>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Adulto mayor</th>
-          <th>Signos vitales</th>
-          <th>Temp.</th>
-          <th>Presión</th>
-          <th>Medicación</th>
-          <th>Observaciones</th>
+          <th>{{ 'monitoring.colDate' | translate }}</th>
+          <th>{{ 'monitoring.colTime' | translate }}</th>
+          <th>{{ 'monitoring.colElderly' | translate }}</th>
+          <th>{{ 'monitoring.colVital' | translate }}</th>
+          <th>{{ 'monitoring.colTemp' | translate }}</th>
+          <th>{{ 'monitoring.colBp' | translate }}</th>
+          <th>{{ 'monitoring.colMed' | translate }}</th>
+          <th>{{ 'monitoring.colObs' | translate }}</th>
           @if (canManage()) { <th></th> }
         </tr>
       </thead>
@@ -166,19 +161,19 @@
             </td>
             <td>
               @if (m.vitalSignsStatus) {
-                <span class="pill" [class]="vitalClass(m.vitalSignsStatus)">{{ m.vitalSignsStatus }}</span>
+                <span class="pill" [class]="vitalClass(m.vitalSignsStatus)">{{ ('monitoring.vital.' + m.vitalSignsStatus) | translate }}</span>
               } @else { <span class="muted">—</span> }
             </td>
             <td>{{ m.temperature ? m.temperature + '°' : '—' }}</td>
             <td>{{ m.bloodPressure || '—' }}</td>
-            <td>{{ m.medicineStatus || '—' }}</td>
+            <td>{{ m.medicineStatus ? (('monitoring.med.' + m.medicineStatus) | translate) : '—' }}</td>
             <td class="muted obs">{{ m.observations || '—' }}</td>
             @if (canManage()) {
               <td class="actions-cell">
-                <button class="icon-btn" title="Editar" (click)="openEdit(m)">
+                <button class="icon-btn" [title]="'common.edit' | translate" (click)="openEdit(m)">
                   <span class="material-symbols-rounded">edit</span>
                 </button>
-                <button class="icon-btn icon-btn--danger" title="Eliminar" (click)="toDelete.set(m)">
+                <button class="icon-btn icon-btn--danger" [title]="'common.delete' | translate" (click)="toDelete.set(m)">
                   <span class="material-symbols-rounded">delete</span>
                 </button>
               </td>
@@ -195,12 +190,12 @@
   <div class="modal-overlay" (click)="toDelete.set(null)">
     <div class="modal modal--center" (click)="$event.stopPropagation()">
       <span class="modal-icon material-symbols-rounded">warning</span>
-      <h3>¿Eliminar este monitoreo?</h3>
-      <p class="muted">{{ m.monitoringDate || 'Sin fecha' }} · {{ m.elderly?.user?.username || 'registro' }}</p>
+      <h3>{{ 'monitoring.deleteTitle' | translate }}</h3>
+      <p class="muted">{{ m.monitoringDate || ('monitoring.noDate' | translate) }} · {{ m.elderly?.name || m.elderly?.user?.username || '—' }}</p>
       <div class="modal-actions" style="justify-content:center">
-        <button class="btn btn--ghost" (click)="toDelete.set(null)">Cancelar</button>
+        <button class="btn btn--ghost" (click)="toDelete.set(null)">{{ 'common.cancel' | translate }}</button>
         <button class="btn btn--danger" (click)="remove()" [disabled]="deleting()">
-          {{ deleting() ? 'Eliminando…' : 'Sí, eliminar' }}
+          {{ (deleting() ? 'common.deleting' : 'common.confirmDelete') | translate }}
         </button>
       </div>
     </div>

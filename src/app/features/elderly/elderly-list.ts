@@ -1,12 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TaytaApi } from '../../core/services/tayta-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Elderly } from '../../core/models/domain.models';
 
 @Component({
   selector: 'app-elderly-list',
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './elderly-list.html',
   styleUrl: './elderly-list.scss',
 })

@@ -2,9 +2,9 @@
   <!-- ====== Dashboard del APODERADO ====== -->
   <section class="ghero">
     <div class="ghero-text">
-      <p class="ghero-kicker">Hola, {{ user()?.username }} 👋</p>
-      <h1>Estamos aquí para <b>acompañarte</b> en el cuidado de tus seres queridos.</h1>
-      <p class="ghero-sub">Toda la información clave, a un vistazo.</p>
+      <p class="ghero-kicker">{{ 'dashboard.hello' | translate }} {{ user()?.username }} 👋</p>
+      <h1>{{ 'dashboard.guardian.heroTitle1' | translate }} <b>{{ 'dashboard.guardian.heroAccent' | translate }}</b> {{ 'dashboard.guardian.heroTitle2' | translate }}</h1>
+      <p class="ghero-sub">{{ 'dashboard.guardian.heroSub' | translate }}</p>
     </div>
     <img class="ghero-art" src="care-illustration.svg" alt="">
   </section>
@@ -13,17 +13,17 @@
     <div class="upsell">
       <span class="upsell-ico material-symbols-rounded">lock_open</span>
       <div class="upsell-text">
-        <strong>Activa tu suscripción para comenzar</strong>
-        <p>Desbloquea el monitoreo, el calendario y el seguimiento de tu adulto mayor.</p>
+        <strong>{{ 'dashboard.guardian.upsellTitle' | translate }}</strong>
+        <p>{{ 'dashboard.guardian.upsellText' | translate }}</p>
       </div>
-      <a class="btn" routerLink="/app/subscription">Ver planes</a>
+      <a class="btn" routerLink="/app/subscription">{{ 'dashboard.guardian.viewPlans' | translate }}</a>
     </div>
   }
 
   <div class="gboard" [class.gboard--locked]="locked()">
     @if (locked()) {
-      <button class="lock-layer" (click)="openUpgrade()" aria-label="Desbloquear contenido">
-        <span class="lock-pill"><span class="material-symbols-rounded">lock</span> Contenido bloqueado · Ver planes</span>
+      <button class="lock-layer" (click)="openUpgrade()" [attr.aria-label]="'dashboard.guardian.viewPlans' | translate">
+        <span class="lock-pill"><span class="material-symbols-rounded">lock</span> {{ 'dashboard.guardian.locked' | translate }}</span>
       </button>
     }
 
@@ -31,8 +31,8 @@
     <!-- En tu cuidado -->
     <div class="gcard gcard--feature">
       <div class="gcard-head">
-        <span>En tu cuidado: <b>{{ gElderlyCount() }}</b></span>
-        <span class="status status--{{ gStatus().cls }}">{{ gStatus().label }}</span>
+        <span>{{ 'dashboard.guardian.inCare' | translate }} <b>{{ gElderlyCount() }}</b></span>
+        <span class="status status--{{ gStatus().cls }}">{{ gStatus().label | translate }}</span>
       </div>
 
       @if (gElderlyList().length > 1) {
@@ -53,76 +53,76 @@
           <span class="feature-avatar">{{ (e.name || e.user?.username || e.dni || '?').slice(0,2).toUpperCase() }}</span>
           <div>
             <strong>{{ e.name || e.user?.username || ('DNI ' + e.dni) }}</strong>
-            <p>Ver perfil completo →</p>
+            <p>{{ 'dashboard.guardian.viewProfile' | translate }}</p>
           </div>
         </a>
       } @else {
-        <div class="feature-body"><p class="muted">Aún no tienes adultos mayores registrados.</p></div>
+        <div class="feature-body"><p class="muted">{{ 'dashboard.guardian.noElderly' | translate }}</p></div>
       }
     </div>
 
     <!-- Estado de salud -->
     <a class="gcard" routerLink="/app/monitoring">
-      <div class="gcard-head"><span><span class="material-symbols-rounded gc-ico">cardiology</span> Estado de salud</span></div>
+      <div class="gcard-head"><span><span class="material-symbols-rounded gc-ico">cardiology</span> {{ 'dashboard.guardian.health' | translate }}</span></div>
       @if (gLatest(); as m) {
         <div class="health-rows">
           <div><span class="material-symbols-rounded">thermostat</span> {{ m.temperature ? m.temperature + ' °C' : '—' }}</div>
           <div><span class="material-symbols-rounded">cardiology</span> {{ m.bloodPressure || '—' }}</div>
           <div><span class="material-symbols-rounded">medication</span> {{ m.medicineStatus || '—' }}</div>
         </div>
-        <p class="gc-foot">Último control: {{ m.monitoringDate }}</p>
+        <p class="gc-foot">{{ 'dashboard.guardian.lastControl' | translate }} {{ m.monitoringDate }}</p>
       } @else {
-        <p class="muted">Sin monitoreos registrados aún.</p>
+        <p class="muted">{{ 'dashboard.guardian.noMonitorings' | translate }}</p>
       }
     </a>
 
     <!-- Calendario -->
     <a class="gcard" routerLink="/app/calendar">
-      <div class="gcard-head"><span><span class="material-symbols-rounded gc-ico">calendar_month</span> Próximas citas</span></div>
+      <div class="gcard-head"><span><span class="material-symbols-rounded gc-ico">calendar_month</span> {{ 'dashboard.guardian.upcoming' | translate }}</span></div>
       @if (gUpcoming().length) {
         <ul class="mini-events">
           @for (e of gUpcoming(); track $index) {
             <li>
               <span class="dot dot--{{ e.accent }}"></span>
-              <span class="me-label">{{ e.label }}</span>
+              <span class="me-label">{{ e.label | translate }}</span>
               <span class="me-date">{{ e.date }}{{ e.time ? ' · ' + e.time.slice(0,5) : '' }}</span>
             </li>
           }
         </ul>
       } @else {
-        <p class="muted">No hay eventos próximos.</p>
+        <p class="muted">{{ 'dashboard.guardian.noEvents' | translate }}</p>
       }
     </a>
 
     <!-- Mi plan -->
     <a class="gcard" routerLink="/app/subscription">
-      <div class="gcard-head"><span><span class="material-symbols-rounded gc-ico">workspace_premium</span> Mi plan</span></div>
+      <div class="gcard-head"><span><span class="material-symbols-rounded gc-ico">workspace_premium</span> {{ 'dashboard.guardian.myPlan' | translate }}</span></div>
       <div class="plan-body">
-        <strong class="plan-name">{{ gPlan() || 'Sin plan activo' }}</strong>
-        @if (gNextCharge()) { <p class="muted">Próxima renovación: {{ gNextCharge() }}</p> }
+        <strong class="plan-name">{{ gPlan() || ('dashboard.guardian.noPlan' | translate) }}</strong>
+        @if (gNextCharge()) { <p class="muted">{{ 'dashboard.guardian.nextRenewal' | translate }} {{ gNextCharge() }}</p> }
       </div>
-      <span class="gc-link">Administrar suscripción →</span>
+      <span class="gc-link">{{ 'dashboard.guardian.managePlan' | translate }}</span>
     </a>
   </section>
 
   <div class="gsplit">
     <!-- Actividad reciente -->
     <section class="activity">
-      <h2 class="section-title">Actividad reciente</h2>
+      <h2 class="section-title">{{ 'dashboard.guardian.activity' | translate }}</h2>
       @if (gActivity().length) {
         <div class="act-list">
           @for (a of gActivity(); track $index) {
             <div class="act-item">
               <span class="act-ico act-ico--{{ a.accent }} material-symbols-rounded">{{ a.icon }}</span>
               <div class="act-text">
-                <strong>{{ a.text }}</strong>
+                <strong>{{ a.labelKey ? ((a.labelKey | translate) + ' ') : '' }}{{ a.detail }}</strong>
                 <span>{{ a.time }}</span>
               </div>
             </div>
           }
         </div>
       } @else {
-        <div class="state">Aún no hay actividad registrada.</div>
+        <div class="state">{{ 'dashboard.guardian.noActivity' | translate }}</div>
       }
     </section>
 
@@ -130,17 +130,13 @@
     <section class="about">
       <div class="about-main">
         <img src="tayta-logo.svg" class="about-logo" alt="TAYTA">
-        <h2>Nuestra misión</h2>
+        <h2>{{ 'dashboard.guardian.missionTitle' | translate }}</h2>
       </div>
-      <p class="about-text">
-        TAYTA acompaña a las familias en el cuidado de sus adultos mayores, conectando
-        apoderados, enfermeros y centros de salud para que el bienestar de quienes más
-        quieres esté siempre cerca.
-      </p>
+      <p class="about-text">{{ 'dashboard.guardian.missionText' | translate }}</p>
       <div class="about-values">
-        <div class="value"><span class="material-symbols-rounded">favorite</span><div><strong>Cuidado cercano</strong></div></div>
-        <div class="value"><span class="material-symbols-rounded">monitor_heart</span><div><strong>Monitoreo</strong></div></div>
-        <div class="value"><span class="material-symbols-rounded">verified_user</span><div><strong>Tranquilidad</strong></div></div>
+        <div class="value"><span class="material-symbols-rounded">favorite</span><div><strong>{{ 'dashboard.guardian.value1' | translate }}</strong></div></div>
+        <div class="value"><span class="material-symbols-rounded">monitor_heart</span><div><strong>{{ 'dashboard.guardian.value2' | translate }}</strong></div></div>
+        <div class="value"><span class="material-symbols-rounded">verified_user</span><div><strong>{{ 'dashboard.guardian.value3' | translate }}</strong></div></div>
       </div>
     </section>
   </div>
@@ -151,23 +147,23 @@
     <div class="modal-overlay" (click)="closeUpgrade()">
       <div class="modal modal--center" (click)="$event.stopPropagation()">
         <span class="modal-icon upgrade-icon material-symbols-rounded">workspace_premium</span>
-        <h3>Estás a un paso</h3>
-        <p class="muted">Estás a un paso de acceder a este contenido. Activa tu suscripción para comenzar.</p>
+        <h3>{{ 'dashboard.guardian.upgradeTitle' | translate }}</h3>
+        <p class="muted">{{ 'dashboard.guardian.upgradeText' | translate }}</p>
         <div class="modal-actions" style="justify-content:center">
-          <button class="btn btn--ghost" (click)="closeUpgrade()">Ahora no</button>
-          <a class="btn" routerLink="/app/subscription">Ver planes</a>
+          <button class="btn btn--ghost" (click)="closeUpgrade()">{{ 'dashboard.guardian.notNow' | translate }}</button>
+          <a class="btn" routerLink="/app/subscription">{{ 'dashboard.guardian.viewPlans' | translate }}</a>
         </div>
       </div>
     </div>
   }
 
 } @else if (isNurse()) {
-  <!-- ====== Dashboard ENFERMERO — centrado en sus adultos y sus datos ====== -->
+  <!-- ====== Dashboard ENFERMERO ====== -->
   <section class="hero" [class]="heroClass()">
     <div>
-      <p class="hero-kicker">{{ greeting() }}</p>
-      <h1 class="hero-title">Hola, {{ user()?.username }} 👋</h1>
-      <p class="hero-sub">{{ heroNote() }}</p>
+      <p class="hero-kicker">{{ greeting() | translate }}</p>
+      <h1 class="hero-title">{{ 'dashboard.hello' | translate }} {{ user()?.username }} 👋</h1>
+      <p class="hero-sub">{{ heroNote() | translate }}</p>
     </div>
     <span class="hero-icon material-symbols-rounded">{{ heroIcon() }}</span>
   </section>
@@ -178,15 +174,15 @@
     } @else {
       <div class="stat-card">
         <span class="stat-icon" data-accent="blue"><span class="material-symbols-rounded">elderly</span></span>
-        <div class="stat-body"><span class="stat-value">{{ nStats().count }}</span><span class="stat-label">Adultos a mi cargo</span></div>
+        <div class="stat-body"><span class="stat-value">{{ nStats().count }}</span><span class="stat-label">{{ 'dashboard.nurse.atCare' | translate }}</span></div>
       </div>
       <div class="stat-card">
         <span class="stat-icon" data-accent="teal"><span class="material-symbols-rounded">monitor_heart</span></span>
-        <div class="stat-body"><span class="stat-value">{{ nStats().monThisMonth }}</span><span class="stat-label">Monitoreos este mes</span></div>
+        <div class="stat-body"><span class="stat-value">{{ nStats().monThisMonth }}</span><span class="stat-label">{{ 'dashboard.nurse.monthMonitorings' | translate }}</span></div>
       </div>
       <div class="stat-card">
         <span class="stat-icon" data-accent="amber"><span class="material-symbols-rounded">warning</span></span>
-        <div class="stat-body"><span class="stat-value">{{ nStats().alerts }}</span><span class="stat-label">Adultos en alerta</span></div>
+        <div class="stat-body"><span class="stat-value">{{ nStats().alerts }}</span><span class="stat-label">{{ 'dashboard.nurse.inAlert' | translate }}</span></div>
       </div>
     }
   </section>
@@ -194,8 +190,8 @@
   <div class="nsplit">
     <section>
       <div class="sec-head">
-        <h2 class="section-title">Mis adultos mayores</h2>
-        <a class="btn btn--sm" routerLink="/app/monitoring"><span class="material-symbols-rounded">add</span> Registrar</a>
+        <h2 class="section-title">{{ 'dashboard.nurse.myElderly' | translate }}</h2>
+        <a class="btn btn--sm" routerLink="/app/monitoring"><span class="material-symbols-rounded">add</span> {{ 'dashboard.nurse.register' | translate }}</a>
       </div>
       @if (nElderlyCards().length) {
         <div class="pt-grid">
@@ -203,7 +199,7 @@
             <a class="pt-card" [routerLink]="['/app/elderly', c.elderly.id]">
               <div class="pt-top">
                 <span class="pt-avatar">{{ (c.elderly.name || c.elderly.dni || '?').slice(0,2).toUpperCase() }}</span>
-                <span class="status status--{{ c.status.cls }}">{{ c.status.label }}</span>
+                <span class="status status--{{ c.status.cls }}">{{ c.status.label | translate }}</span>
               </div>
               <strong class="pt-name">{{ c.elderly.name || ('DNI ' + c.elderly.dni) }}</strong>
               @if (c.latest) {
@@ -211,40 +207,40 @@
                   <span><span class="material-symbols-rounded">thermostat</span>{{ c.latest.temperature ? c.latest.temperature + '°' : '—' }}</span>
                   <span><span class="material-symbols-rounded">cardiology</span>{{ c.latest.bloodPressure || '—' }}</span>
                 </div>
-                <span class="pt-date">Último control: {{ c.latest.monitoringDate }}</span>
+                <span class="pt-date">{{ 'dashboard.nurse.lastControl' | translate }} {{ c.latest.monitoringDate }}</span>
               } @else {
-                <span class="pt-date muted">Sin monitoreos aún</span>
+                <span class="pt-date muted">{{ 'dashboard.nurse.noMonitorings' | translate }}</span>
               }
             </a>
           }
         </div>
       } @else {
-        <div class="state">Aún no tienes adultos mayores asignados. El administrador debe asignártelos.</div>
+        <div class="state">{{ 'dashboard.nurse.noAssigned' | translate }}</div>
       }
     </section>
 
     <section class="activity">
-      <h2 class="section-title">Actividad reciente</h2>
+      <h2 class="section-title">{{ 'dashboard.nurse.activity' | translate }}</h2>
       @if (nActivity().length) {
         <div class="act-list">
           @for (a of nActivity(); track $index) {
             <div class="act-item">
               <span class="act-ico act-ico--{{ a.accent }} material-symbols-rounded">{{ a.icon }}</span>
-              <div class="act-text"><strong>{{ a.text }}</strong><span>{{ a.time }}</span></div>
+              <div class="act-text"><strong>{{ a.labelKey ? ((a.labelKey | translate) + ' ') : '' }}{{ a.detail }}</strong><span>{{ a.time }}</span></div>
             </div>
           }
         </div>
-      } @else { <div class="state">Sin monitoreos registrados aún.</div> }
+      } @else { <div class="state">{{ 'dashboard.nurse.activity' | translate }}</div> }
     </section>
   </div>
 
 } @else {
-  <!-- ====== Dashboard ADMIN — gestión de la plataforma ====== -->
+  <!-- ====== Dashboard ADMIN ====== -->
   <section class="hero" [class]="heroClass()">
     <div>
-      <p class="hero-kicker">{{ greeting() }}</p>
-      <h1 class="hero-title">Hola, {{ user()?.username }} 👋</h1>
-      <p class="hero-sub">{{ heroNote() }}</p>
+      <p class="hero-kicker">{{ greeting() | translate }}</p>
+      <h1 class="hero-title">{{ 'dashboard.hello' | translate }} {{ user()?.username }} 👋</h1>
+      <p class="hero-sub">{{ heroNote() | translate }}</p>
     </div>
     <span class="hero-icon material-symbols-rounded">{{ heroIcon() }}</span>
   </section>
@@ -256,7 +252,7 @@
       @for (s of aStats(); track s.label) {
         <div class="stat-card">
           <span class="stat-icon" [attr.data-accent]="s.accent"><span class="material-symbols-rounded">{{ s.icon }}</span></span>
-          <div class="stat-body"><span class="stat-value">{{ s.value }}</span><span class="stat-label">{{ s.label }}</span></div>
+          <div class="stat-body"><span class="stat-value">{{ s.value }}</span><span class="stat-label">{{ s.label | translate }}</span></div>
         </div>
       }
     }
@@ -264,24 +260,24 @@
 
   <div class="nsplit">
     <section class="activity">
-      <h2 class="section-title">Requiere atención</h2>
+      <h2 class="section-title">{{ 'dashboard.admin.attention' | translate }}</h2>
       @if (aAlerts().length) {
         <div class="act-list">
           @for (m of aAlerts(); track m.id) {
             <div class="act-item">
               <span class="act-ico act-ico--amber material-symbols-rounded">warning</span>
               <div class="act-text">
-                <strong>{{ m.elderly?.name || 'Adulto mayor' }} · {{ m.vitalSignsStatus }}</strong>
+                <strong>{{ m.elderly?.name || '—' }} · {{ m.vitalSignsStatus }}</strong>
                 <span>{{ m.monitoringDate }}{{ m.nurse?.user?.username ? ' · ' + m.nurse?.user?.username : '' }}</span>
               </div>
             </div>
           }
         </div>
-      } @else { <div class="state">Sin alertas. Todo en orden ✅</div> }
+      } @else { <div class="state">{{ 'dashboard.admin.noAlerts' | translate }}</div> }
     </section>
 
     <section>
-      <h2 class="section-title">Usuarios por rol</h2>
+      <h2 class="section-title">{{ 'dashboard.admin.usersByRole' | translate }}</h2>
       <div class="role-dist">
         @for (r of aRoles(); track r.role) {
           <div class="role-row">
@@ -293,14 +289,14 @@
     </section>
   </div>
 
-  <h2 class="section-title">Gestión</h2>
+  <h2 class="section-title">{{ 'dashboard.admin.management' | translate }}</h2>
   <section class="actions">
     @for (a of quickActions(); track a.path) {
       <a class="action-card" [routerLink]="a.path">
         <span class="action-icon material-symbols-rounded">{{ a.icon }}</span>
         <div>
-          <strong>{{ a.label }}</strong>
-          <p>{{ a.description }}</p>
+          <strong>{{ a.label | translate }}</strong>
+          <p>{{ a.description | translate }}</p>
         </div>
         <span class="action-arrow material-symbols-rounded">chevron_right</span>
       </a>

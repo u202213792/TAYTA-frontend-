@@ -1,9 +1,11 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { LangToggle } from '../../shared/lang-toggle/lang-toggle';
 
 @Component({
   selector: 'app-landing',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe, LangToggle],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
 })
@@ -15,17 +17,17 @@ export default class Landing implements AfterViewInit, OnDestroy {
   readonly year = new Date().getFullYear();
 
   readonly services = [
-    { icon: 'monitor_heart', title: 'Monitoreo de signos vitales', text: 'Registro de temperatura, presión y estado de salud por personal de enfermería.' },
-    { icon: 'calendar_month', title: 'Calendario de salud', text: 'Citas médicas, medicación, terapias y vacunas organizadas por adulto mayor.' },
-    { icon: 'local_hospital', title: 'Centros de salud', text: 'Directorio de centros médicos cercanos con calificación y contacto de emergencia.' },
-    { icon: 'family_restroom', title: 'Acompañamiento familiar', text: 'El apoderado sigue de cerca el bienestar de su adulto mayor desde un solo lugar.' },
+    { icon: 'monitor_heart', titleKey: 'landing.services.s1Title', textKey: 'landing.services.s1Text' },
+    { icon: 'calendar_month', titleKey: 'landing.services.s2Title', textKey: 'landing.services.s2Text' },
+    { icon: 'local_hospital', titleKey: 'landing.services.s3Title', textKey: 'landing.services.s3Text' },
+    { icon: 'family_restroom', titleKey: 'landing.services.s4Title', textKey: 'landing.services.s4Text' },
   ];
 
   readonly vitalSteps = [
-    { n: '1', icon: 'assignment', title: 'Registro del control', text: 'La enfermera técnica registra cada visita con fecha y hora.' },
-    { n: '2', icon: 'thermostat', title: 'Signos vitales', text: 'Temperatura, presión arterial y estado de medicación.' },
-    { n: '3', icon: 'trending_up', title: 'Seguimiento', text: 'El historial se visualiza en gráficos para ver la evolución.' },
-    { n: '4', icon: 'notifications_active', title: 'Alertas', text: 'Estados Normal, Alerta o Crítico para actuar a tiempo.' },
+    { n: '1', icon: 'assignment', titleKey: 'landing.vitals.s1Title', textKey: 'landing.vitals.s1Text' },
+    { n: '2', icon: 'thermostat', titleKey: 'landing.vitals.s2Title', textKey: 'landing.vitals.s2Text' },
+    { n: '3', icon: 'trending_up', titleKey: 'landing.vitals.s3Title', textKey: 'landing.vitals.s3Text' },
+    { n: '4', icon: 'notifications_active', titleKey: 'landing.vitals.s4Title', textKey: 'landing.vitals.s4Text' },
   ];
 
   ngAfterViewInit(): void {

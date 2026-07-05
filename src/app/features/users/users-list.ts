@@ -1,12 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TaytaApi } from '../../core/services/tayta-api.service';
 import { Role, UserRow } from '../../core/models/domain.models';
 import { extractError } from '../../core/utils/http-error';
 
 @Component({
   selector: 'app-users-list',
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: './users-list.html',
   styleUrl: './users-list.scss',
 })

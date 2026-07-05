@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ChartConfiguration, Plugin } from 'chart.js';
 import { TaytaApi } from '../../core/services/tayta-api.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -21,7 +22,7 @@ const C = {
 
 @Component({
   selector: 'app-monitoring',
-  imports: [FormsModule, ChartComponent],
+  imports: [FormsModule, ChartComponent, TranslatePipe],
   templateUrl: './monitoring.html',
   styleUrl: './monitoring.scss',
 })
@@ -277,7 +278,7 @@ export default class MonitoringPage {
   }
 
   get formTitle(): string {
-    return this.editingId == null ? 'Nuevo registro' : 'Editar registro';
+    return this.editingId == null ? 'monitoring.formNew' : 'monitoring.formEdit';
   }
 
   openNew(): void {

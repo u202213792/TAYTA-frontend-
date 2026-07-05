@@ -14,7 +14,7 @@
       <img src="tayta-logo.svg" class="brand-logo" alt="TAYTA">
       <div class="brand-text">
         <span class="brand-name">TAYTA</span>
-        <span class="brand-tag">{{ panelTag() }}</span>
+        <span class="brand-tag">{{ panelTag() | translate }}</span>
       </div>
     </div>
 
@@ -26,7 +26,7 @@
           routerLinkActive="nav-link--active"
           (click)="closeSidebar()">
           <span class="material-symbols-rounded">{{ item.icon }}</span>
-          <span>{{ item.label }}</span>
+          <span>{{ item.label | translate }}</span>
         </a>
       }
     </nav>
@@ -35,8 +35,8 @@
       <div class="help-card">
         <span class="material-symbols-rounded">support_agent</span>
         <div>
-          <strong>¿Necesitas ayuda?</strong>
-          <p>Soporte 24/7 para tu familia</p>
+          <strong>{{ 'nav.helpTitle' | translate }}</strong>
+          <p>{{ 'nav.helpText' | translate }}</p>
         </div>
       </div>
     </div>
@@ -59,7 +59,9 @@
         </div>
       </div>
 
-      <button class="icon-btn" (click)="logout()" title="Cerrar sesión" aria-label="Cerrar sesión">
+      <app-lang-toggle></app-lang-toggle>
+
+      <button class="icon-btn" (click)="logout()" [title]="'nav.logout' | translate" [attr.aria-label]="'nav.logout' | translate">
         <span class="material-symbols-rounded">logout</span>
       </button>
     </header>

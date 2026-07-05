@@ -1,21 +1,21 @@
 <header class="page-head">
   <div>
-    <h1>Usuarios</h1>
-    <p>Cuentas registradas. Puedes cambiar el rol, el estado o eliminar.</p>
+    <h1>{{ 'users.title' | translate }}</h1>
+    <p>{{ 'users.subtitle' | translate }}</p>
   </div>
   <span class="head-icon material-symbols-rounded">group</span>
 </header>
 
 @if (loading()) {
-  <div class="state">Cargando usuarios…</div>
+  <div class="state">{{ 'users.loading' | translate }}</div>
 } @else if (error()) {
-  <div class="state state--error">No se pudieron cargar los usuarios.</div>
+  <div class="state state--error">{{ 'users.loadError' | translate }}</div>
 } @else {
   <div class="filter-bar">
     <span class="material-symbols-rounded">filter_alt</span>
-    <label for="roleFilter">Rol:</label>
+    <label for="roleFilter">{{ 'users.filterRole' | translate }}</label>
     <select id="roleFilter" [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event)">
-      <option value="all">Todos</option>
+      <option value="all">{{ 'common.all' | translate }}</option>
       @for (r of roles(); track r.id) {
         <option [value]="r.roleName">{{ r.roleName }}</option>
       }
@@ -23,18 +23,18 @@
   </div>
 
   @if (filtered().length === 0) {
-    <div class="state">No hay usuarios con ese rol.</div>
+    <div class="state">{{ 'users.emptyFiltered' | translate }}</div>
   } @else {
   <div class="table-card">
     <table class="table">
       <thead>
         <tr>
           <th>#</th>
-          <th>Usuario</th>
-          <th>Correo</th>
-          <th>Rol</th>
-          <th>Estado</th>
-          <th>Registrado</th>
+          <th>{{ 'users.colUser' | translate }}</th>
+          <th>{{ 'users.colEmail' | translate }}</th>
+          <th>{{ 'users.colRole' | translate }}</th>
+          <th>{{ 'users.colStatus' | translate }}</th>
+          <th>{{ 'users.colRegistered' | translate }}</th>
           <th></th>
         </tr>
       </thead>
@@ -52,17 +52,17 @@
             <td><span class="badge" [class]="roleClass(u.role?.roleName)">{{ u.role?.roleName || '—' }}</span></td>
             <td>
               @if (u.enabled) {
-                <span class="status status--on">Activo</span>
+                <span class="status status--on">{{ 'users.active' | translate }}</span>
               } @else {
-                <span class="status status--off">Inactivo</span>
+                <span class="status status--off">{{ 'users.inactive' | translate }}</span>
               }
             </td>
             <td class="muted">{{ u.createdAt }}</td>
             <td class="actions-cell">
-              <button class="icon-btn" title="Editar" (click)="openEdit(u)">
+              <button class="icon-btn" [title]="'common.edit' | translate" (click)="openEdit(u)">
                 <span class="material-symbols-rounded">edit</span>
               </button>
-              <button class="icon-btn icon-btn--danger" title="Eliminar" (click)="toDelete.set(u)">
+              <button class="icon-btn icon-btn--danger" [title]="'common.delete' | translate" (click)="toDelete.set(u)">
                 <span class="material-symbols-rounded">delete</span>
               </button>
             </td>
@@ -78,12 +78,12 @@
 @if (editing(); as u) {
   <div class="modal-overlay" (click)="closeEdit()">
     <div class="modal" (click)="$event.stopPropagation()">
-      <h3>Editar usuario</h3>
+      <h3>{{ 'users.editTitle' | translate }}</h3>
       <form (ngSubmit)="save()">
         <div class="grid-form">
-          <label class="full">Usuario <input type="text" [value]="u.username" disabled></label>
-          <label class="full">Correo <input type="email" name="email" [(ngModel)]="form.email"></label>
-          <label class="full">Rol
+          <label class="full">{{ 'users.colUser' | translate }} <input type="text" [value]="u.username" disabled></label>
+          <label class="full">{{ 'users.colEmail' | translate }} <input type="email" name="email" [(ngModel)]="form.email"></label>
+          <label class="full">{{ 'users.colRole' | translate }}
             <select name="role" [(ngModel)]="form.roleId">
               @for (r of roles(); track r.id) {
                 <option [ngValue]="r.id">{{ r.roleName }}</option>
@@ -91,13 +91,13 @@
             </select>
           </label>
           <label class="full check">
-            <input type="checkbox" name="enabled" [(ngModel)]="form.enabled"> Cuenta activa
+            <input type="checkbox" name="enabled" [(ngModel)]="form.enabled"> {{ 'users.accountActive' | translate }}
           </label>
         </div>
         @if (formError()) { <p class="form-err">{{ formError() }}</p> }
         <div class="modal-actions">
-          <button type="button" class="btn btn--ghost" (click)="closeEdit()">Cancelar</button>
-          <button type="submit" class="btn" [disabled]="saving()">{{ saving() ? 'Guardando…' : 'Guardar' }}</button>
+          <button type="button" class="btn btn--ghost" (click)="closeEdit()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn" [disabled]="saving()">{{ (saving() ? 'common.saving' : 'common.save') | translate }}</button>
         </div>
       </form>
     </div>
@@ -109,12 +109,12 @@
   <div class="modal-overlay" (click)="toDelete.set(null)">
     <div class="modal modal--center" (click)="$event.stopPropagation()">
       <span class="modal-icon material-symbols-rounded">warning</span>
-      <h3>¿Eliminar a "{{ u.username }}"?</h3>
-      <p class="muted">Esta acción no se puede deshacer.</p>
+      <h3>{{ 'users.deleteTitle' | translate:{ name: u.username } }}</h3>
+      <p class="muted">{{ 'users.deleteWarn' | translate }}</p>
       <div class="modal-actions" style="justify-content:center">
-        <button class="btn btn--ghost" (click)="toDelete.set(null)">Cancelar</button>
+        <button class="btn btn--ghost" (click)="toDelete.set(null)">{{ 'common.cancel' | translate }}</button>
         <button class="btn btn--danger" (click)="remove()" [disabled]="deleting()">
-          {{ deleting() ? 'Eliminando…' : 'Sí, eliminar' }}
+          {{ (deleting() ? 'common.deleting' : 'common.confirmDelete') | translate }}
         </button>
       </div>
     </div>

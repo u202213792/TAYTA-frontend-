@@ -1,7 +1,7 @@
 <header class="page-head">
   <div>
-    <h1>{{ isAdmin() ? 'Suscripciones' : 'Mi suscripción' }}</h1>
-    <p>{{ isAdmin() ? 'Planes y pagos de todos los apoderados.' : 'Tu plan, estado y pagos realizados.' }}</p>
+    <h1>{{ (isAdmin() ? 'subscription.titleAdmin' : 'subscription.titleGuardian') | translate }}</h1>
+    <p>{{ (isAdmin() ? 'subscription.subtitleAdmin' : 'subscription.subtitleGuardian') | translate }}</p>
   </div>
   <span class="head-icon material-symbols-rounded">workspace_premium</span>
 </header>
@@ -9,25 +9,25 @@
 @if (subscribedOk()) {
   <div class="sub-ok">
     <span class="material-symbols-rounded">check_circle</span>
-    ¡Plan activado! Tu suscripción ya está lista. Redirigiendo…
+    {{ 'subscription.activated' | translate }}
   </div>
 }
 
 @if (loading()) {
-  <div class="state">Cargando suscripción…</div>
+  <div class="state">{{ 'subscription.loading' | translate }}</div>
 } @else if (error()) {
-  <div class="state state--error">No se pudo cargar la información.</div>
+  <div class="state state--error">{{ 'subscription.loadError' | translate }}</div>
 } @else if (subscriptions().length === 0) {
-  <div class="state">No tienes una suscripción registrada todavía.</div>
+  <div class="state">{{ 'subscription.empty' | translate }}</div>
 } @else {
 
   <!-- Filtro por apoderado (solo admin) -->
   @if (isAdmin() && guardianOptions().length > 0) {
     <div class="filter-bar">
       <span class="material-symbols-rounded">filter_alt</span>
-      <label for="guardianFilter">Apoderado:</label>
+      <label for="guardianFilter">{{ 'subscription.filterGuardian' | translate }}</label>
       <select id="guardianFilter" [ngModel]="guardianFilter()" (ngModelChange)="guardianFilter.set($event)">
-        <option [ngValue]="'all'">Todos</option>
+        <option [ngValue]="'all'">{{ 'common.all' | translate }}</option>
         @for (o of guardianOptions(); track o.id) {
           <option [ngValue]="o.id">{{ o.label }}</option>
         }
@@ -44,7 +44,7 @@
             <span class="material-symbols-rounded">workspace_premium</span>{{ s.planType }}
           </span>
           @if (isActive(s.status)) {
-            <span class="st st--on">Activa</span>
+            <span class="st st--on">{{ 'subscription.active' | translate }}</span>
           } @else {
             <span class="st st--off">{{ s.status }}</span>
           }
@@ -75,21 +75,21 @@
 
   <!-- Resumen + Historial de pagos -->
   <div class="pay-head">
-    <h2 class="section-title">Historial de pagos</h2>
-    <span class="paid-total">Total pagado: <strong>S/ {{ totalPaid() | number: '1.2-2' }}</strong></span>
+    <h2 class="section-title">{{ 'subscription.paymentHistory' | translate }}</h2>
+    <span class="paid-total">{{ 'subscription.totalPaid' | translate }} <strong>S/ {{ totalPaid() | number: '1.2-2' }}</strong></span>
   </div>
 
   @if (visiblePayments().length === 0) {
-    <div class="state">Sin pagos registrados.</div>
+    <div class="state">{{ 'subscription.noPayments' | translate }}</div>
   } @else {
     <div class="table-card">
       <table class="table">
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Plan</th>
-            <th>Monto</th>
-            <th>Estado</th>
+            <th>{{ 'subscription.colDate' | translate }}</th>
+            <th>{{ 'subscription.colPlan' | translate }}</th>
+            <th>{{ 'subscription.colAmount' | translate }}</th>
+            <th>{{ 'subscription.colStatus' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -107,30 +107,30 @@
   }
 }
 
-<!-- Comparativa de planes (solo apoderados; el admin solo gestiona) -->
+<!-- Comparativa de planes (solo apoderados) -->
 @if (isGuardian()) {
-<h2 class="section-title">Planes disponibles</h2>
+<h2 class="section-title">{{ 'subscription.availablePlans' | translate }}</h2>
 <div class="compare">
   @for (p of plans; track p.type) {
     <article class="compare-card" [class.compare-card--current]="currentPlan() === p.type">
       <div class="compare-head">
         <span class="compare-type">{{ p.type }}</span>
-        @if (currentPlan() === p.type) { <span class="compare-tag">Tu plan</span> }
+        @if (currentPlan() === p.type) { <span class="compare-tag">{{ 'subscription.yourPlan' | translate }}</span> }
       </div>
-      <div class="compare-price"><span class="cur">S/</span>{{ p.price }}<span class="per">/mes</span></div>
-      <div class="compare-limit"><span class="material-symbols-rounded">groups</span>{{ p.limit }}</div>
+      <div class="compare-price"><span class="cur">S/</span>{{ p.price }}<span class="per">{{ 'subscription.perMonth' | translate }}</span></div>
+      <div class="compare-limit"><span class="material-symbols-rounded">groups</span>{{ p.limit | translate }}</div>
       <ul class="compare-features">
         @for (f of p.features; track f) {
-          <li><span class="material-symbols-rounded">check_circle</span>{{ f }}</li>
+          <li><span class="material-symbols-rounded">check_circle</span>{{ f | translate }}</li>
         }
       </ul>
 
       @if (isGuardian()) {
         @if (currentPlan() === p.type) {
-          <button class="btn btn--ghost compare-btn" disabled>Plan actual</button>
+          <button class="btn btn--ghost compare-btn" disabled>{{ 'subscription.currentPlan' | translate }}</button>
         } @else {
           <button class="btn compare-btn" (click)="openSubscribe(p.type)">
-            {{ hasActive() ? 'Cambiar a este plan' : 'Contratar' }}
+            {{ (hasActive() ? 'subscription.changeToThis' : 'subscription.subscribe') | translate }}
           </button>
         }
       }
@@ -142,8 +142,8 @@
 @if (subModalPlan(); as plan) {
   <div class="modal-overlay" (click)="closeSubscribe()">
     <div class="modal" (click)="$event.stopPropagation()">
-      <h3>{{ hasActive() ? 'Cambiar al plan' : 'Contratar plan' }} {{ plan }}</h3>
-      <p class="muted" style="margin:-0.5rem 0 1rem; font-size:0.88rem;">Elige tu método de pago para activar la suscripción.</p>
+      <h3>{{ (hasActive() ? 'subscription.modalChange' : 'subscription.modalSubscribe') | translate }} {{ plan }}</h3>
+      <p class="muted" style="margin:-0.5rem 0 1rem; font-size:0.88rem;">{{ 'subscription.choosePayment' | translate }}</p>
       <div class="pay-methods">
         @for (m of paymentMethods; track m) {
           <button
@@ -154,15 +154,15 @@
             <span class="material-symbols-rounded">
               {{ m === 'Tarjeta' ? 'credit_card' : (m === 'Efectivo' ? 'payments' : 'qr_code_2') }}
             </span>
-            {{ m }}
+            {{ methodKey(m) | translate }}
           </button>
         }
       </div>
       @if (subError()) { <p class="form-err">{{ subError() }}</p> }
       <div class="modal-actions">
-        <button class="btn btn--ghost" (click)="closeSubscribe()">Cancelar</button>
+        <button class="btn btn--ghost" (click)="closeSubscribe()">{{ 'common.cancel' | translate }}</button>
         <button class="btn" (click)="confirmSubscribe()" [disabled]="subscribing()">
-          {{ subscribing() ? 'Procesando…' : 'Confirmar y pagar' }}
+          {{ (subscribing() ? 'subscription.processing' : 'subscription.confirmPay') | translate }}
         </button>
       </div>
     </div>

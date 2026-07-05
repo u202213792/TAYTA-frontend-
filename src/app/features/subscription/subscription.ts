@@ -6,11 +6,12 @@ import { forkJoin } from 'rxjs';
 import { TaytaApi } from '../../core/services/tayta-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Payment, Subscription } from '../../core/models/domain.models';
+import { TranslatePipe } from '@ngx-translate/core';
 import { extractError } from '../../core/utils/http-error';
 
 @Component({
   selector: 'app-subscription',
-  imports: [DecimalPipe, FormsModule],
+  imports: [DecimalPipe, FormsModule, TranslatePipe],
   templateUrl: './subscription.html',
   styleUrl: './subscription.scss',
 })
@@ -31,24 +32,31 @@ export default class SubscriptionPage {
     {
       type: 'BASIC',
       price: 60,
-      limit: '1 adulto mayor',
-      features: ['Calendario de citas y medicación', 'Monitoreo básico de signos vitales'],
+      limit: 'subscription.plan.basicLimit',
+      features: ['subscription.feat.calendar', 'subscription.feat.basicMon'],
     },
     {
       type: 'STANDARD',
       price: 90,
-      limit: 'Hasta 3 adultos mayores',
-      features: ['Todo lo de Basic', 'Monitoreo completo', 'Historia clínica', 'Alertas básicas'],
+      limit: 'subscription.plan.standardLimit',
+      features: ['subscription.feat.allBasic', 'subscription.feat.fullMon', 'subscription.feat.clinical', 'subscription.feat.basicAlerts'],
     },
     {
       type: 'PREMIUM',
       price: 120,
-      limit: 'Adultos mayores ilimitados',
-      features: ['Todo lo de Standard', 'Enfermero asignado', 'Alertas en tiempo real', 'Soporte prioritario 24/7'],
+      limit: 'subscription.plan.premiumLimit',
+      features: ['subscription.feat.allStandard', 'subscription.feat.assignedNurse', 'subscription.feat.realtimeAlerts', 'subscription.feat.support'],
     },
   ];
 
   readonly paymentMethods = ['Tarjeta', 'Efectivo', 'Yape / Plin'];
+
+  /** Clave de traducción para mostrar el método de pago (el valor guardado no cambia). */
+  methodKey(m: string): string {
+    if (m === 'Tarjeta') return 'subscription.methodCard';
+    if (m === 'Efectivo') return 'subscription.methodCash';
+    return m;
+  }
 
   readonly currentPlan = computed(() => {
     const active = this.subscriptions().find((s) => (s.status || '').toUpperCase() === 'ACTIVE');

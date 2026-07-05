@@ -1,11 +1,11 @@
 <header class="page-head">
   <div>
-    <h1>Adultos mayores</h1>
-    <p>Personas registradas y sus datos médicos básicos.</p>
+    <h1>{{ 'elderly.list.title' | translate }}</h1>
+    <p>{{ 'elderly.list.subtitle' | translate }}</p>
   </div>
   @if (canCreate()) {
     <button class="btn" (click)="create()">
-      <span class="material-symbols-rounded">add</span> Nuevo
+      <span class="material-symbols-rounded">add</span> {{ 'elderly.list.new' | translate }}
     </button>
   } @else {
     <span class="head-icon material-symbols-rounded">elderly</span>
@@ -13,11 +13,11 @@
 </header>
 
 @if (loading()) {
-  <div class="state">Cargando registros…</div>
+  <div class="state">{{ 'elderly.list.loading' | translate }}</div>
 } @else if (error()) {
-  <div class="state state--error">No se pudieron cargar los registros.</div>
+  <div class="state state--error">{{ 'elderly.list.loadError' | translate }}</div>
 } @else if (items().length === 0) {
-  <div class="state">Aún no hay adultos mayores registrados.</div>
+  <div class="state">{{ 'elderly.list.empty' | translate }}</div>
 } @else {
   <div class="profiles">
     @for (e of items(); track e.id) {
@@ -31,10 +31,10 @@
 
         <div class="profile-meta">
           <span><span class="material-symbols-rounded">wc</span> {{ e.gender || '—' }}</span>
-          <span><span class="material-symbols-rounded">medical_information</span> {{ e.chronicDiseases || 'Sin enfermedades' }}</span>
+          <span><span class="material-symbols-rounded">medical_information</span> {{ e.chronicDiseases || ('elderly.list.noDiseases' | translate) }}</span>
         </div>
 
-        <span class="profile-link">Ver perfil <span class="material-symbols-rounded">chevron_right</span></span>
+        <span class="profile-link">{{ 'elderly.list.viewProfile' | translate }} <span class="material-symbols-rounded">chevron_right</span></span>
       </article>
     }
   </div>

@@ -1,14 +1,14 @@
 <div class="detail-top">
-  <button class="icon-btn back" (click)="back()" aria-label="Volver">
+  <button class="icon-btn back" (click)="back()" [attr.aria-label]="'common.back' | translate">
     <span class="material-symbols-rounded">arrow_back</span>
   </button>
-  <h1>{{ title() }}</h1>
+  <h1>{{ title() | translate }}</h1>
 </div>
 
 @if (loading()) {
-  <div class="state">Cargando ficha…</div>
+  <div class="state">{{ 'elderly.detail.loading' | translate }}</div>
 } @else if (notFound()) {
-  <div class="state state--error">No se encontró el registro.</div>
+  <div class="state state--error">{{ 'elderly.detail.notFound' | translate }}</div>
 } @else {
 
   <!-- MODO LECTURA -->
@@ -23,26 +23,26 @@
         <div class="ficha-actions">
           @if (canEdit()) {
             <button class="btn btn--ghost" (click)="startEdit()">
-              <span class="material-symbols-rounded">edit</span> Editar
+              <span class="material-symbols-rounded">edit</span> {{ 'common.edit' | translate }}
             </button>
           }
           @if (canDelete()) {
             <button class="btn btn--danger" (click)="confirmDelete.set(true)">
-              <span class="material-symbols-rounded">delete</span> Eliminar
+              <span class="material-symbols-rounded">delete</span> {{ 'common.delete' | translate }}
             </button>
           }
         </div>
       </div>
 
       <div class="ficha-grid">
-        <div class="field"><span class="k">Sexo</span><span class="v">{{ current()?.gender || '—' }}</span></div>
-        <div class="field"><span class="k">Tipo de sangre</span><span class="v blood">{{ current()?.bloodType || '—' }}</span></div>
-        <div class="field"><span class="k">Talla</span><span class="v">{{ current()?.height ? current()?.height + ' m' : '—' }}</span></div>
-        <div class="field"><span class="k">Peso actual</span><span class="v">{{ current()?.currentWeight ? current()?.currentWeight + ' kg' : '—' }}</span></div>
-        <div class="field full"><span class="k">Alergias</span><span class="v">{{ current()?.allergies || '—' }}</span></div>
-        <div class="field full"><span class="k">Enfermedades crónicas</span><span class="v">{{ current()?.chronicDiseases || '—' }}</span></div>
-        <div class="field full"><span class="k">Medicación actual</span><span class="v">{{ current()?.currentMedication || '—' }}</span></div>
-        <div class="field full"><span class="k">Observaciones médicas</span><span class="v">{{ current()?.medicalObservations || '—' }}</span></div>
+        <div class="field"><span class="k">{{ 'elderly.detail.sex' | translate }}</span><span class="v">{{ current()?.gender || '—' }}</span></div>
+        <div class="field"><span class="k">{{ 'elderly.detail.bloodType' | translate }}</span><span class="v blood">{{ current()?.bloodType || '—' }}</span></div>
+        <div class="field"><span class="k">{{ 'elderly.detail.height' | translate }}</span><span class="v">{{ current()?.height ? current()?.height + ' m' : '—' }}</span></div>
+        <div class="field"><span class="k">{{ 'elderly.detail.weight' | translate }}</span><span class="v">{{ current()?.currentWeight ? current()?.currentWeight + ' kg' : '—' }}</span></div>
+        <div class="field full"><span class="k">{{ 'elderly.detail.allergies' | translate }}</span><span class="v">{{ current()?.allergies || '—' }}</span></div>
+        <div class="field full"><span class="k">{{ 'elderly.detail.chronic' | translate }}</span><span class="v">{{ current()?.chronicDiseases || '—' }}</span></div>
+        <div class="field full"><span class="k">{{ 'elderly.detail.medication' | translate }}</span><span class="v">{{ current()?.currentMedication || '—' }}</span></div>
+        <div class="field full"><span class="k">{{ 'elderly.detail.observations' | translate }}</span><span class="v">{{ current()?.medicalObservations || '—' }}</span></div>
       </div>
     </div>
 
@@ -50,11 +50,11 @@
     <div class="profile-grid">
       <section class="card profile-section">
         <div class="ps-head">
-          <h3><span class="material-symbols-rounded">monitor_heart</span> Monitoreos</h3>
+          <h3><span class="material-symbols-rounded">monitor_heart</span> {{ 'elderly.detail.monitorings' | translate }}</h3>
           @if (isNurse()) {
             <button class="btn btn--sm" (click)="toggleMon()">
               <span class="material-symbols-rounded">{{ monOpen() ? 'close' : 'add' }}</span>
-              {{ monOpen() ? 'Cancelar' : 'Agregar' }}
+              {{ (monOpen() ? 'common.cancel' : 'elderly.detail.add') | translate }}
             </button>
           }
         </div>
@@ -62,25 +62,25 @@
         @if (monOpen()) {
           <form class="inline-form" (ngSubmit)="submitMon()">
             <div class="grid-form">
-              <label>Estado
+              <label>{{ 'elderly.detail.fState' | translate }}
                 <select name="mv" [(ngModel)]="monForm.vitalSignsStatus">
-                  @for (v of vitalOptions; track v) { <option [ngValue]="v">{{ v }}</option> }
+                  @for (v of vitalOptions; track v) { <option [ngValue]="v">{{ ('monitoring.vital.' + v) | translate }}</option> }
                 </select>
               </label>
-              <label>Medicación
+              <label>{{ 'elderly.detail.fMed' | translate }}
                 <select name="mm" [(ngModel)]="monForm.medicineStatus">
-                  @for (x of medicineOptions; track x) { <option [ngValue]="x">{{ x }}</option> }
+                  @for (x of medicineOptions; track x) { <option [ngValue]="x">{{ ('monitoring.med.' + x) | translate }}</option> }
                 </select>
               </label>
-              <label>Fecha <input type="date" name="md" [(ngModel)]="monForm.monitoringDate" required></label>
-              <label>Hora <input type="time" name="mt" [(ngModel)]="monForm.monitoringTime" required></label>
-              <label>Temp. (°C) <input type="number" step="0.1" min="30" max="45" name="mte" [(ngModel)]="monForm.temperature"></label>
-              <label>Presión <input type="text" name="mbp" [(ngModel)]="monForm.bloodPressure" placeholder="120/80"></label>
-              <label class="full">Observaciones <input type="text" name="mo" [(ngModel)]="monForm.observations"></label>
+              <label>{{ 'elderly.detail.fDate' | translate }} <input type="date" name="md" [(ngModel)]="monForm.monitoringDate" required></label>
+              <label>{{ 'elderly.detail.fTime' | translate }} <input type="time" name="mt" [(ngModel)]="monForm.monitoringTime" required></label>
+              <label>{{ 'elderly.detail.fTemp' | translate }} <input type="number" step="0.1" min="30" max="45" name="mte" [(ngModel)]="monForm.temperature"></label>
+              <label>{{ 'elderly.detail.fBp' | translate }} <input type="text" name="mbp" [(ngModel)]="monForm.bloodPressure" placeholder="120/80"></label>
+              <label class="full">{{ 'elderly.detail.fObs' | translate }} <input type="text" name="mo" [(ngModel)]="monForm.observations"></label>
             </div>
             @if (monError()) { <p class="form-err">{{ monError() }}</p> }
             <div class="form-actions">
-              <button type="submit" class="btn btn--sm" [disabled]="monSaving()">{{ monSaving() ? 'Guardando…' : 'Guardar' }}</button>
+              <button type="submit" class="btn btn--sm" [disabled]="monSaving()">{{ (monSaving() ? 'common.saving' : 'common.save') | translate }}</button>
             </div>
           </form>
         }
@@ -90,23 +90,23 @@
             @for (m of monitorings(); track m.id) {
               <div class="prof-row">
                 <span class="prof-date">{{ m.monitoringDate }}</span>
-                <span class="pill" [class]="vitalClass(m.vitalSignsStatus)">{{ m.vitalSignsStatus || '—' }}</span>
+                <span class="pill" [class]="vitalClass(m.vitalSignsStatus)">{{ m.vitalSignsStatus ? (('monitoring.vital.' + m.vitalSignsStatus) | translate) : '—' }}</span>
                 <span class="prof-meta">{{ m.temperature ? m.temperature + '°' : '—' }} · {{ m.bloodPressure || '—' }}</span>
               </div>
             }
           </div>
         } @else {
-          <p class="muted">Sin monitoreos registrados.</p>
+          <p class="muted">{{ 'elderly.detail.noMonitorings' | translate }}</p>
         }
       </section>
 
       <section class="card profile-section">
         <div class="ps-head">
-          <h3><span class="material-symbols-rounded">calendar_month</span> Calendario</h3>
+          <h3><span class="material-symbols-rounded">calendar_month</span> {{ 'elderly.detail.calendar' | translate }}</h3>
           @if (canCalendar()) {
             <button class="btn btn--sm" (click)="toggleCal()">
               <span class="material-symbols-rounded">{{ calOpen() ? 'close' : 'add' }}</span>
-              {{ calOpen() ? 'Cancelar' : 'Agregar' }}
+              {{ (calOpen() ? 'common.cancel' : 'elderly.detail.add') | translate }}
             </button>
           }
         </div>
@@ -114,17 +114,17 @@
         @if (calOpen()) {
           <form class="inline-form" (ngSubmit)="submitCal()">
             <div class="grid-form">
-              <label>Fecha cita <input type="date" name="cad" [(ngModel)]="calForm.appointmentDate"></label>
-              <label>Hora cita <input type="time" name="cat" [(ngModel)]="calForm.appointmentTime"></label>
-              <label>Fecha medicación <input type="date" name="cmd" [(ngModel)]="calForm.medicineDate"></label>
-              <label>Hora medicación <input type="time" name="cmt" [(ngModel)]="calForm.medicineTime"></label>
-              <label>Fecha terapia <input type="date" name="ctd" [(ngModel)]="calForm.therapyDate"></label>
-              <label>Hora terapia <input type="time" name="ctt" [(ngModel)]="calForm.therapyTime"></label>
-              <label class="full">Vacuna <input type="text" name="cv" [(ngModel)]="calForm.vaccines" placeholder="Ej. Influenza"></label>
+              <label>{{ 'elderly.detail.calApptDate' | translate }} <input type="date" name="cad" [(ngModel)]="calForm.appointmentDate"></label>
+              <label>{{ 'elderly.detail.calApptTime' | translate }} <input type="time" name="cat" [(ngModel)]="calForm.appointmentTime"></label>
+              <label>{{ 'elderly.detail.calMedDate' | translate }} <input type="date" name="cmd" [(ngModel)]="calForm.medicineDate"></label>
+              <label>{{ 'elderly.detail.calMedTime' | translate }} <input type="time" name="cmt" [(ngModel)]="calForm.medicineTime"></label>
+              <label>{{ 'elderly.detail.calTherDate' | translate }} <input type="date" name="ctd" [(ngModel)]="calForm.therapyDate"></label>
+              <label>{{ 'elderly.detail.calTherTime' | translate }} <input type="time" name="ctt" [(ngModel)]="calForm.therapyTime"></label>
+              <label class="full">{{ 'elderly.detail.vaccine' | translate }} <input type="text" name="cv" [(ngModel)]="calForm.vaccines" [placeholder]="'elderly.detail.vaccinePh' | translate"></label>
             </div>
             @if (calError()) { <p class="form-err">{{ calError() }}</p> }
             <div class="form-actions">
-              <button type="submit" class="btn btn--sm" [disabled]="calSaving()">{{ calSaving() ? 'Guardando…' : 'Guardar' }}</button>
+              <button type="submit" class="btn btn--sm" [disabled]="calSaving()">{{ (calSaving() ? 'common.saving' : 'common.save') | translate }}</button>
             </div>
           </form>
         }
@@ -134,13 +134,13 @@
             @for (e of events(); track $index) {
               <div class="prof-row">
                 <span class="prof-ico material-symbols-rounded">{{ e.icon }}</span>
-                <span class="prof-label">{{ e.label }}</span>
+                <span class="prof-label">{{ e.label | translate }}</span>
                 <span class="prof-meta">{{ e.date }}{{ e.time ? ' · ' + e.time.slice(0,5) : '' }}{{ e.detail ? ' · ' + e.detail : '' }}</span>
               </div>
             }
           </div>
         } @else {
-          <p class="muted">Sin citas próximas.</p>
+          <p class="muted">{{ 'elderly.detail.noEvents' | translate }}</p>
         }
       </section>
     </div>
@@ -151,34 +151,34 @@
   <!-- MODO EDICIÓN / NUEVO -->
   @if (editing()) {
     <form class="form-card" (ngSubmit)="save()">
-      <h3>{{ isNew ? 'Datos del adulto mayor' : 'Editar datos' }}</h3>
+      <h3>{{ (isNew ? 'elderly.detail.formNewTitle' : 'elderly.detail.formEditTitle') | translate }}</h3>
       <div class="grid-form">
-        <label class="full">Nombre completo <input type="text" name="name" [(ngModel)]="form.name" required placeholder="Ej. María Pérez"></label>
-        <label>DNI <input type="text" name="dni" [(ngModel)]="form.dni" required maxlength="8" inputmode="numeric" placeholder="8 dígitos"></label>
-        <label>Sexo
+        <label class="full">{{ 'elderly.detail.fullName' | translate }} <input type="text" name="name" [(ngModel)]="form.name" required [placeholder]="'elderly.detail.fullNamePh' | translate"></label>
+        <label>{{ 'elderly.detail.dni' | translate }} <input type="text" name="dni" [(ngModel)]="form.dni" required maxlength="8" inputmode="numeric" [placeholder]="'elderly.detail.dniPh' | translate"></label>
+        <label>{{ 'elderly.detail.sex' | translate }}
           <select name="gender" [(ngModel)]="form.gender">
-            @for (g of genders; track g.v) { <option [ngValue]="g.v">{{ g.label }}</option> }
+            @for (g of genders; track g.v) { <option [ngValue]="g.v">{{ g.label | translate }}</option> }
           </select>
         </label>
-        <label>Tipo de sangre
+        <label>{{ 'elderly.detail.bloodType' | translate }}
           <select name="blood" [(ngModel)]="form.bloodType">
             @for (b of bloodTypes; track b) { <option [ngValue]="b">{{ b }}</option> }
           </select>
         </label>
-        <label>Talla (m) <input type="number" step="0.01" name="height" [(ngModel)]="form.height"></label>
-        <label>Peso (kg) <input type="number" step="0.1" name="weight" [(ngModel)]="form.currentWeight"></label>
-        <label class="full">Alergias <input type="text" name="allergies" [(ngModel)]="form.allergies" placeholder="Ninguna"></label>
-        <label class="full">Enfermedades crónicas <input type="text" name="chronic" [(ngModel)]="form.chronicDiseases"></label>
-        <label class="full">Medicación actual <input type="text" name="med" [(ngModel)]="form.currentMedication"></label>
-        <label class="full">Observaciones médicas <textarea name="obs" rows="2" [(ngModel)]="form.medicalObservations"></textarea></label>
+        <label>{{ 'elderly.detail.heightM' | translate }} <input type="number" step="0.01" name="height" [(ngModel)]="form.height"></label>
+        <label>{{ 'elderly.detail.weightKg' | translate }} <input type="number" step="0.1" name="weight" [(ngModel)]="form.currentWeight"></label>
+        <label class="full">{{ 'elderly.detail.allergies' | translate }} <input type="text" name="allergies" [(ngModel)]="form.allergies" [placeholder]="'elderly.detail.allergiesPh' | translate"></label>
+        <label class="full">{{ 'elderly.detail.chronic' | translate }} <input type="text" name="chronic" [(ngModel)]="form.chronicDiseases"></label>
+        <label class="full">{{ 'elderly.detail.medication' | translate }} <input type="text" name="med" [(ngModel)]="form.currentMedication"></label>
+        <label class="full">{{ 'elderly.detail.observations' | translate }} <textarea name="obs" rows="2" [(ngModel)]="form.medicalObservations"></textarea></label>
       </div>
 
       @if (errorMsg()) { <p class="form-err">{{ errorMsg() }}</p> }
 
       <div class="form-actions">
-        <button type="button" class="btn btn--ghost" (click)="cancelEdit()">Cancelar</button>
+        <button type="button" class="btn btn--ghost" (click)="cancelEdit()">{{ 'common.cancel' | translate }}</button>
         <button type="submit" class="btn" [disabled]="saving()">
-          {{ saving() ? 'Guardando…' : (isNew ? 'Crear' : 'Guardar cambios') }}
+          {{ saving() ? ('common.saving' | translate) : ((isNew ? 'elderly.detail.create' : 'elderly.detail.saveChanges') | translate) }}
         </button>
       </div>
     </form>
@@ -190,11 +190,11 @@
   <div class="modal-overlay" (click)="showLimit.set(false)">
     <div class="modal modal--center" (click)="$event.stopPropagation()">
       <span class="modal-icon material-symbols-rounded" style="color:var(--blue-600)">workspace_premium</span>
-      <h3>Mejora tu plan</h3>
+      <h3>{{ 'elderly.detail.upgradeTitle' | translate }}</h3>
       <p class="muted">{{ limitMsg() }}</p>
       <div class="modal-actions" style="justify-content:center">
-        <button class="btn btn--ghost" (click)="showLimit.set(false)">Ahora no</button>
-        <button class="btn" (click)="goToPlans()">Ver planes</button>
+        <button class="btn btn--ghost" (click)="showLimit.set(false)">{{ 'elderly.detail.notNow' | translate }}</button>
+        <button class="btn" (click)="goToPlans()">{{ 'elderly.detail.viewPlans' | translate }}</button>
       </div>
     </div>
   </div>
@@ -205,12 +205,12 @@
   <div class="modal-overlay" (click)="confirmDelete.set(false)">
     <div class="modal" (click)="$event.stopPropagation()">
       <span class="modal-icon material-symbols-rounded">warning</span>
-      <h3>¿Eliminar este registro?</h3>
-      <p>Esta acción no se puede deshacer.</p>
+      <h3>{{ 'elderly.detail.deleteTitle' | translate }}</h3>
+      <p>{{ 'elderly.detail.deleteWarn' | translate }}</p>
       <div class="modal-actions">
-        <button class="btn btn--ghost" (click)="confirmDelete.set(false)">Cancelar</button>
+        <button class="btn btn--ghost" (click)="confirmDelete.set(false)">{{ 'common.cancel' | translate }}</button>
         <button class="btn btn--danger" (click)="remove()" [disabled]="deleting()">
-          {{ deleting() ? 'Eliminando…' : 'Sí, eliminar' }}
+          {{ (deleting() ? 'common.deleting' : 'common.confirmDelete') | translate }}
         </button>
       </div>
     </div>

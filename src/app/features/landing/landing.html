@@ -7,12 +7,13 @@
       <span>TAYTA</span>
     </a>
     <nav class="nav-links">
-      <a href="#nosotros" (click)="scrollTo('nosotros', $event)">Nosotros</a>
-      <a href="#servicios" (click)="scrollTo('servicios', $event)">Servicios</a>
-      <a href="#vitales" (click)="scrollTo('vitales', $event)">Funciones vitales</a>
-      <a href="#contacto" (click)="scrollTo('contacto', $event)">Contacto</a>
+      <a href="#nosotros" (click)="scrollTo('nosotros', $event)">{{ 'landing.nav.about' | translate }}</a>
+      <a href="#servicios" (click)="scrollTo('servicios', $event)">{{ 'landing.nav.services' | translate }}</a>
+      <a href="#vitales" (click)="scrollTo('vitales', $event)">{{ 'landing.nav.vitals' | translate }}</a>
+      <a href="#contacto" (click)="scrollTo('contacto', $event)">{{ 'landing.nav.contact' | translate }}</a>
     </nav>
-    <a class="btn btn--nav" routerLink="/login">Iniciar sesión</a>
+    <app-lang-toggle></app-lang-toggle>
+    <a class="btn btn--nav" routerLink="/login">{{ 'landing.nav.login' | translate }}</a>
   </header>
 
   <!-- ===== Hero ===== -->
@@ -20,12 +21,12 @@
     <video class="hero-bg" src="iniciov2.mp4" autoplay muted loop playsinline preload="auto"></video>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <span class="hero-pill">Cuidado del adulto mayor</span>
-      <h1>El bienestar de quienes más quieres, <b>siempre cerca</b>.</h1>
-      <p>TAYTA conecta a familias, enfermeros y centros de salud para monitorear y acompañar a los adultos mayores desde un solo lugar.</p>
+      <span class="hero-pill">{{ 'landing.hero.pill' | translate }}</span>
+      <h1>{{ 'landing.hero.title' | translate }} <b>{{ 'landing.hero.accent' | translate }}</b>.</h1>
+      <p>{{ 'landing.hero.subtitle' | translate }}</p>
       <div class="hero-cta">
-        <a class="btn btn--lg" routerLink="/register" [queryParams]="{ intent: 'subscribe' }">Suscríbete ahora</a>
-        <a class="btn btn--lg btn--ghost-light" routerLink="/login">Iniciar sesión</a>
+        <a class="btn btn--lg" routerLink="/register" [queryParams]="{ intent: 'subscribe' }">{{ 'landing.hero.cta1' | translate }}</a>
+        <a class="btn btn--lg btn--ghost-light" routerLink="/login">{{ 'landing.hero.cta2' | translate }}</a>
       </div>
     </div>
   </section>
@@ -34,39 +35,39 @@
   <section class="stats-band">
     <div class="stat reveal reveal--left">
       <span class="stat-num"><span class="count" data-to="500">0</span>+</span>
-      <span class="stat-cap">Familias acompañadas</span>
+      <span class="stat-cap">{{ 'landing.stats.families' | translate }}</span>
     </div>
     <div class="stat reveal">
       <span class="stat-num"><span class="count" data-to="120">0</span>+</span>
-      <span class="stat-cap">Enfermeros certificados</span>
+      <span class="stat-cap">{{ 'landing.stats.nurses' | translate }}</span>
     </div>
     <div class="stat reveal">
       <span class="stat-num"><span class="count" data-to="8500">0</span>+</span>
-      <span class="stat-cap">Monitoreos realizados</span>
+      <span class="stat-cap">{{ 'landing.stats.monitorings' | translate }}</span>
     </div>
     <div class="stat reveal reveal--right">
       <span class="stat-num">4.9<span class="star">★</span></span>
-      <span class="stat-cap">Satisfacción</span>
+      <span class="stat-cap">{{ 'landing.stats.satisfaction' | translate }}</span>
     </div>
   </section>
 
   <!-- ===== Sobre nosotros ===== -->
   <section class="section" id="nosotros">
     <div class="section-head reveal">
-      <span class="kicker">Quiénes somos</span>
-      <h2>Sobre nosotros</h2>
-      <p>Una plataforma pensada para cuidar con cercanía, información y confianza.</p>
+      <span class="kicker">{{ 'landing.about.kicker' | translate }}</span>
+      <h2>{{ 'landing.about.title' | translate }}</h2>
+      <p>{{ 'landing.about.subtitle' | translate }}</p>
     </div>
     <div class="mv-grid">
       <article class="mv-card reveal reveal--left">
         <span class="mv-icon material-symbols-rounded">flag</span>
-        <h3>Nuestra misión</h3>
-        <p>Mejorar la calidad de vida de los adultos mayores brindando a sus familias herramientas simples para monitorear su salud y coordinar su cuidado con personal capacitado.</p>
+        <h3>{{ 'landing.about.missionTitle' | translate }}</h3>
+        <p>{{ 'landing.about.mission' | translate }}</p>
       </article>
       <article class="mv-card mv-card--accent reveal reveal--right">
         <span class="mv-icon material-symbols-rounded">visibility</span>
-        <h3>Nuestra visión</h3>
-        <p>Ser la plataforma de referencia en el cuidado del adulto mayor, integrando familia, enfermería y centros de salud en una experiencia confiable y humana.</p>
+        <h3>{{ 'landing.about.visionTitle' | translate }}</h3>
+        <p>{{ 'landing.about.vision' | translate }}</p>
       </article>
     </div>
   </section>
@@ -74,16 +75,16 @@
   <!-- ===== Servicios ===== -->
   <section class="section section--alt" id="servicios">
     <div class="section-head reveal">
-      <span class="kicker">Lo que ofrecemos</span>
-      <h2>Nuestros servicios</h2>
-      <p>Todo lo que necesitas para acompañar el cuidado, en un mismo lugar.</p>
+      <span class="kicker">{{ 'landing.services.kicker' | translate }}</span>
+      <h2>{{ 'landing.services.title' | translate }}</h2>
+      <p>{{ 'landing.services.subtitle' | translate }}</p>
     </div>
     <div class="serv-grid">
-      @for (s of services; track s.title) {
+      @for (s of services; track s.titleKey) {
         <article class="serv-card reveal" [class.reveal--left]="$even" [class.reveal--right]="$odd">
           <span class="serv-icon material-symbols-rounded">{{ s.icon }}</span>
-          <h3>{{ s.title }}</h3>
-          <p>{{ s.text }}</p>
+          <h3>{{ s.titleKey | translate }}</h3>
+          <p>{{ s.textKey | translate }}</p>
         </article>
       }
     </div>
@@ -92,17 +93,17 @@
   <!-- ===== Control de funciones vitales ===== -->
   <section class="section" id="vitales">
     <div class="section-head reveal">
-      <span class="kicker">Cómo funciona</span>
-      <h2>¿Cómo funciona el control de funciones vitales?</h2>
-      <p>Un seguimiento claro de la salud del adulto mayor, paso a paso.</p>
+      <span class="kicker">{{ 'landing.vitals.kicker' | translate }}</span>
+      <h2>{{ 'landing.vitals.title' | translate }}</h2>
+      <p>{{ 'landing.vitals.subtitle' | translate }}</p>
     </div>
     <div class="steps">
       @for (st of vitalSteps; track st.n) {
         <article class="step reveal">
           <span class="step-num">{{ st.n }}</span>
           <span class="step-icon material-symbols-rounded">{{ st.icon }}</span>
-          <h3>{{ st.title }}</h3>
-          <p>{{ st.text }}</p>
+          <h3>{{ st.titleKey | translate }}</h3>
+          <p>{{ st.textKey | translate }}</p>
         </article>
       }
     </div>
@@ -115,13 +116,13 @@
         <img src="login-photo.jpg" alt="Enfermera técnica atendiendo a un adulto mayor">
       </div>
       <div class="care-text reveal reveal--right">
-        <h2>Enfermería técnica y atención personal</h2>
-        <p>Nuestro personal de enfermería realiza visitas y registra el estado del adulto mayor, garantizando una atención cercana y profesional.</p>
+        <h2>{{ 'landing.care.title' | translate }}</h2>
+        <p>{{ 'landing.care.text' | translate }}</p>
         <ul>
-          <li><span class="material-symbols-rounded">check_circle</span> Controles periódicos de signos vitales.</li>
-          <li><span class="material-symbols-rounded">check_circle</span> Seguimiento de la medicación y terapias.</li>
-          <li><span class="material-symbols-rounded">check_circle</span> Observaciones registradas para la familia.</li>
-          <li><span class="material-symbols-rounded">check_circle</span> Trato humano y personalizado a cada paciente.</li>
+          <li><span class="material-symbols-rounded">check_circle</span> {{ 'landing.care.li1' | translate }}</li>
+          <li><span class="material-symbols-rounded">check_circle</span> {{ 'landing.care.li2' | translate }}</li>
+          <li><span class="material-symbols-rounded">check_circle</span> {{ 'landing.care.li3' | translate }}</li>
+          <li><span class="material-symbols-rounded">check_circle</span> {{ 'landing.care.li4' | translate }}</li>
         </ul>
       </div>
     </div>
@@ -130,40 +131,40 @@
   <!-- ===== Contacto ===== -->
   <section class="section contacto" id="contacto">
     <div class="section-head reveal">
-      <span class="kicker">Ponte en contacto</span>
-      <h2>Contáctanos</h2>
-      <p>¿Tienes dudas? Escríbenos o llámanos, estamos para ayudarte.</p>
+      <span class="kicker">{{ 'landing.contact.kicker' | translate }}</span>
+      <h2>{{ 'landing.contact.title' | translate }}</h2>
+      <p>{{ 'landing.contact.subtitle' | translate }}</p>
     </div>
     <div class="contact-grid">
       <a class="contact-card reveal" href="mailto:tayta@gmail.com">
         <span class="material-symbols-rounded">mail</span>
-        <strong>Correo</strong>
+        <strong>{{ 'landing.contact.email' | translate }}</strong>
         <span>tayta&#64;gmail.com</span>
       </a>
       <a class="contact-card contact-card--accent reveal" href="tel:+51967709871">
         <span class="material-symbols-rounded">call</span>
-        <strong>Teléfono</strong>
+        <strong>{{ 'landing.contact.phone' | translate }}</strong>
         <span>+51 967 709 871</span>
       </a>
       <div class="contact-card reveal">
         <span class="material-symbols-rounded">location_on</span>
-        <strong>Ubicación</strong>
-        <span>Lima, Perú</span>
+        <strong>{{ 'landing.contact.location' | translate }}</strong>
+        <span>{{ 'landing.contact.city' | translate }}</span>
       </div>
     </div>
     <div class="contact-cta">
-      <a class="btn btn--lg" routerLink="/login">Ingresar a la plataforma</a>
+      <a class="btn btn--lg" routerLink="/login">{{ 'landing.contact.cta' | translate }}</a>
     </div>
   </section>
 
   <!-- ===== CTA final ===== -->
   <section class="cta-band">
     <div class="cta-inner reveal">
-      <h2>¿Listo para cuidar mejor a quienes más quieres?</h2>
-      <p>Únete a TAYTA y ten el bienestar de tu adulto mayor siempre a la mano.</p>
+      <h2>{{ 'landing.cta.title' | translate }}</h2>
+      <p>{{ 'landing.cta.text' | translate }}</p>
       <div class="cta-actions">
-        <a class="btn btn--lg" routerLink="/register" [queryParams]="{ intent: 'subscribe' }">Suscríbete ahora</a>
-        <a class="btn btn--lg btn--ghost-light" routerLink="/login">Iniciar sesión</a>
+        <a class="btn btn--lg" routerLink="/register" [queryParams]="{ intent: 'subscribe' }">{{ 'landing.cta.cta1' | translate }}</a>
+        <a class="btn btn--lg btn--ghost-light" routerLink="/login">{{ 'landing.cta.cta2' | translate }}</a>
       </div>
     </div>
   </section>
@@ -174,7 +175,7 @@
       <img src="tayta-logo.svg" alt="TAYTA">
       <span>TAYTA</span>
     </div>
-    <p>© {{ year }} TAYTA · Cuidado del adulto mayor</p>
+    <p>© {{ year }} {{ 'landing.footer' | translate }}</p>
   </footer>
 
 </div>

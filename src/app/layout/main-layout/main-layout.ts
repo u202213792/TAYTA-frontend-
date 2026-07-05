@@ -1,6 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
+import { LangToggle } from '../../shared/lang-toggle/lang-toggle';
 
 interface NavItem {
   label: string;
@@ -10,19 +12,19 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { label: 'Inicio', icon: 'dashboard', path: '/app/dashboard', roles: ['ADMIN', 'GUARDIAN', 'NURSE'] },
-  { label: 'Adultos mayores', icon: 'elderly', path: '/app/elderly', roles: ['ADMIN', 'GUARDIAN', 'NURSE'] },
-  { label: 'Monitoreo', icon: 'monitor_heart', path: '/app/monitoring', roles: ['ADMIN', 'GUARDIAN', 'NURSE'] },
-  { label: 'Calendario', icon: 'calendar_month', path: '/app/calendar', roles: ['GUARDIAN', 'NURSE'] },
-  { label: 'Centros de salud', icon: 'local_hospital', path: '/app/health-centers', roles: ['ADMIN', 'GUARDIAN', 'NURSE'] },
-  { label: 'Suscripción', icon: 'workspace_premium', path: '/app/subscription', roles: ['ADMIN', 'GUARDIAN'] },
-  { label: 'Usuarios', icon: 'group', path: '/app/users', roles: ['ADMIN'] },
-  { label: 'Enfermeros', icon: 'medical_services', path: '/app/nurses', roles: ['ADMIN'] },
+  { label: 'nav.dashboard', icon: 'dashboard', path: '/app/dashboard', roles: ['ADMIN', 'GUARDIAN', 'NURSE'] },
+  { label: 'nav.elderly', icon: 'elderly', path: '/app/elderly', roles: ['ADMIN', 'GUARDIAN', 'NURSE'] },
+  { label: 'nav.monitoring', icon: 'monitor_heart', path: '/app/monitoring', roles: ['ADMIN', 'GUARDIAN', 'NURSE'] },
+  { label: 'nav.calendar', icon: 'calendar_month', path: '/app/calendar', roles: ['GUARDIAN', 'NURSE'] },
+  { label: 'nav.healthCenters', icon: 'local_hospital', path: '/app/health-centers', roles: ['ADMIN', 'GUARDIAN', 'NURSE'] },
+  { label: 'nav.subscription', icon: 'workspace_premium', path: '/app/subscription', roles: ['ADMIN', 'GUARDIAN'] },
+  { label: 'nav.users', icon: 'group', path: '/app/users', roles: ['ADMIN'] },
+  { label: 'nav.nurses', icon: 'medical_services', path: '/app/nurses', roles: ['ADMIN'] },
 ];
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, LangToggle],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',
 })
@@ -49,10 +51,10 @@ export class MainLayout {
   // Etiqueta del panel según el rol (refuerza la identidad de cada uno)
   readonly panelTag = computed(() => {
     switch (this.user()?.role) {
-      case 'GUARDIAN': return 'Panel familiar';
-      case 'NURSE': return 'Panel de enfermería';
-      case 'ADMIN': return 'Panel de administración';
-      default: return 'Cuidado del adulto mayor';
+      case 'GUARDIAN': return 'panelTag.guardian';
+      case 'NURSE': return 'panelTag.nurse';
+      case 'ADMIN': return 'panelTag.admin';
+      default: return 'panelTag.default';
     }
   });
 

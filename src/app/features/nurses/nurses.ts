@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TaytaApi } from '../../core/services/tayta-api.service';
 import { Elderly, Nurse, NurseElderly } from '../../core/models/domain.models';
 import { extractError } from '../../core/utils/http-error';
@@ -14,7 +15,7 @@ interface NurseCard {
 
 @Component({
   selector: 'app-nurses',
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: './nurses.html',
   styleUrl: './nurses.scss',
 })

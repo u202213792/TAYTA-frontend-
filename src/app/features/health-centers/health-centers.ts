@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TaytaApi } from '../../core/services/tayta-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { HealthCenter, HealthCenterPayload } from '../../core/models/domain.models';
@@ -7,7 +8,7 @@ import { extractError } from '../../core/utils/http-error';
 
 @Component({
   selector: 'app-health-centers',
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: './health-centers.html',
   styleUrl: './health-centers.scss',
 })
@@ -87,7 +88,7 @@ export default class HealthCenters {
   }
 
   get modalTitle(): string {
-    return this.editingId == null ? 'Nuevo centro de salud' : 'Editar centro de salud';
+    return this.editingId == null ? 'healthCenters.modalNew' : 'healthCenters.modalEdit';
   }
 
   save(): void {
